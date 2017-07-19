@@ -183,3 +183,7 @@
 .layout-mode a:hover {
     cursor: pointer
 }
+
+.lb-custom_callback{
+    display: none;
+}

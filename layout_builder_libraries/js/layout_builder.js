@@ -40,8 +40,6 @@
 			lb.log("FINISHED");
 		};
 		/*------------------------------------------ Canvas & Controls ---------------------------------------*/
-
-
 		/**
 		 * Build and append the canvas, making sure existing HTML in the user's div is wrapped. Will also trigger Responsive classes to existing markup if specified
 		 */
@@ -462,7 +460,7 @@
 							curr_control.loc = 'top';
 						}
 						if (typeof curr_control.iconClass === 'undefined') {
-							curr_control.iconClass = 'fa fa-file-code-o';
+							curr_control.iconClass = 'fa';
 						}
 						if (typeof curr_control.btnLabel === 'undefined') {
 							curr_control.btnLabel = '';
