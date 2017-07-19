@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	$("#builder").gridmanager({
+	$("#builder").layout_builder({
 		debug: 1,
 		customControls: {
 			global_row: [{callback: 'custom_callback', loc: 'bottom', btnLabel: 'row btn'}],

@@ -1,17 +1,19 @@
 (function ($) {
 
 	/**
-	 * Main Gridmanager function
-	 * @method gridmanager
-	 * @returns gridmanager
-	 * @class gridmanager
+	 * Main Layout Builder function
+	 * @method layout_builder
+	 * @returns layout_builder
+	 * @class layout_builder
 	 * @memberOf jQuery.fn
 	 */
-	$.gridmanager = function (el, options) {
-		var gm = this;
-		gm.$el = $(el);
-		gm.el = el;
-		gm.$el.data("gridmanager", gm);
+	$.layout_builder = function (el, options) {
+
+		var lb = this;
+
+		lb.$el = $(el);
+		lb.el = el;
+		lb.$el.data("layout_builder", lb);
 
 		/**
 		 * API
@@ -19,12 +21,12 @@
 		 * @param {string} html - HTML to append to selected columns
 		 * @returns null
 		 */
-		gm.appendHTMLSelectedCols = function (html) {
-			var canvas = gm.$el.find("#" + gm.options.canvasId);
-			var cols = canvas.find(gm.options.colSelector);
+		lb.appendHTMLSelectedCols = function (html) {
+			var canvas = lb.$el.find("#" + lb.options.canvasId);
+			var cols = canvas.find(lb.options.colSelector);
 			$.each(cols, function () {
-				if ($(this).hasClass(gm.options.gmEditClassSelected)) {
-					$('.' + gm.options.gmEditRegion, this).append(html);
+				if ($(this).hasClass(lb.options.gmEditClassSelected)) {
+					$('.' + lb.options.gmEditRegion, this).append(html);
 				}
 			});
 		};
@@ -33,19 +35,18 @@
 		 * @method init
 		 * @returns null
 		 */
-		gm.init = function () {
-			gm.options = $.extend({}, $.gridmanager.defaultOptions, options);
-			gm.log("INIT");
-			gm.addCSS(gm.options.cssInclude);
-			gm.rteControl("init");
-			gm.createCanvas();
-			gm.createControls();
-			gm.initControls();
-			gm.initDefaultButtons();
-			gm.initCanvas();
-			gm.log("FINISHED");
+		lb.init = function () {
+			lb.options = $.extend({}, $.layout_builder.defaultOptions, options);
+			lb.log("INIT");
+			lb.addCSS(lb.options.cssInclude);
+			lb.rteControl("init");
+			lb.createCanvas();
+			lb.createControls();
+			lb.initControls();
+			lb.initDefaultButtons();
+			lb.initCanvas();
+			lb.log("FINISHED");
 		};
-
 		/*------------------------------------------ Canvas & Controls ---------------------------------------*/
 
 
@@ -54,24 +55,23 @@
 		 * @method createCanvas
 		 * @returns null
 		 */
-		gm.createCanvas = function () {
-			gm.log("+ Create Canvas");
-			var html = gm.$el.html();
-			gm.$el.html("");
-			$('<div/>', {'id': gm.options.canvasId, 'html': html}).appendTo(gm.$el);
+		lb.createCanvas = function () {
+			lb.log("+ Create Canvas");
+			var html = lb.$el.html();
+			lb.$el.html("");
+			$('<div/>', {'id': lb.options.canvasId, 'html': html}).appendTo(lb.$el);
 			// Add responsive classes after initial loading of HTML, otherwise we lose the rows
-			if (gm.options.addResponsiveClasses) {
-				gm.addResponsiveness(gm.$el.find("#" + gm.options.canvasId));
+			if (lb.options.addResponsiveClasses) {
+				lb.addResponsiveness(lb.$el.find("#" + lb.options.canvasId));
 			}
 			// Add default editable regions: we try and do this early on, as then we don't need to replicate logic to add regions
-			if (gm.options.autoEdit) {
-				gm.initMarkup(
-					gm.$el.find("#" + gm.options.canvasId)
-						.find("." + gm.options.colClass)
-						.not("." + gm.options.rowClass)
+			if (lb.options.autoEdit) {
+				lb.initMarkup(
+					lb.$el.find("#" + lb.options.canvasId)
+						.find("." + lb.options.colClass)
+						.not("." + lb.options.rowClass)
 				);
 			}
-
 		};
 
 		/**
@@ -79,17 +79,17 @@
 		 * @method initMarkup
 		 * @returns null
 		 */
-		gm.initMarkup = function (cols) {
-			var cTagOpen = '<!--' + gm.options.gmEditRegion + '-->',
-				cTagClose = '<!--\/' + gm.options.gmEditRegion + '-->';
+		lb.initMarkup = function (cols) {
+			var cTagOpen = '<!--' + lb.options.gmEditRegion + '-->',
+				cTagClose = '<!--\/' + lb.options.gmEditRegion + '-->';
 
 			// Loop over each column
 			$.each(cols, function (i, col) {
 				var hasGmComment = false,
-					hasNested = $(col).children().hasClass(gm.options.rowClass);
+					hasNested = $(col).children().hasClass(lb.options.rowClass);
 
 				// Search for comments within column contents
-				// NB, at the moment this is just finding "any" comment for testing, but should search for <!--gm-*
+				// NB, at the moment this is just finding "any" comment for testing, but should search for <!--lb-*
 				$.each($(col).contents(), function (x, node) {
 					if ($(node)[0].nodeType === 8) {
 						hasGmComment = true;
@@ -101,15 +101,15 @@
 					if (hasNested) {
 						// Apply nested wrap
 						$.each($(col).contents(), function (i, val) {
-							if ($(val).hasClass(gm.options.rowClass)) {
-								var prev = Array.prototype.reverse.call($(val).prevUntil("." + gm.options.rowClass)),
-									after = $(val).nextUntil("." + gm.options.rowClass);
+							if ($(val).hasClass(lb.options.rowClass)) {
+								var prev = Array.prototype.reverse.call($(val).prevUntil("." + lb.options.rowClass)),
+									after = $(val).nextUntil("." + lb.options.rowClass);
 
-								if (!$(prev).hasClass(gm.options.gmEditRegion)) {
+								if (!$(prev).hasClass(lb.options.gmEditRegion)) {
 									$(prev).first().before(cTagOpen).end()
 										.last().after(cTagClose);
 								}
-								if (!$(after).hasClass(gm.options.gmEditRegion)) {
+								if (!$(after).hasClass(lb.options.gmEditRegion)) {
 									$(after).first().before(cTagOpen).end()
 										.last().after(cTagClose);
 								}
@@ -126,25 +126,25 @@
 					}
 				}
 			});
-			gm.log("initMarkup ran");
+			lb.log("initMarkup ran");
 		};
 
 		/*
 		 Init global default buttons on cols, rows or both
 		 */
 
-		gm.initDefaultButtons = function () {
-			if (gm.options.colSelectEnabled) {
-				gm.options.customControls.global_col.push({
-					callback: gm.selectColClick,
+		lb.initDefaultButtons = function () {
+			if (lb.options.colSelectEnabled) {
+				lb.options.customControls.global_col.push({
+					callback: lb.selectColClick,
 					loc: 'top',
 					iconClass: 'fa fa-square-o',
 					title: 'Select Column'
 				});
 			}
-			if (gm.options.editableRegionEnabled) {
-				gm.options.customControls.global_col.push({
-					callback: gm.addEditableAreaClick,
+			if (lb.options.editableRegionEnabled) {
+				lb.options.customControls.global_col.push({
+					callback: lb.addEditableAreaClick,
 					loc: 'top',
 					iconClass: 'fa fa-edit',
 					title: 'Add Editable Region'
@@ -159,13 +159,13 @@
 		 * @param {} html
 		 * @returns CallExpression
 		 */
-		gm.addResponsiveness = function (html) {
+		lb.addResponsiveness = function (html) {
 			if (html === '') {
 				return;
 			}
-			var desktopRegex = gm.options.colDesktopClass + '(\\d+)',
-				tabletRegex = gm.options.colTabletClass + '(\\d+)',
-				phoneRegex = gm.options.colPhoneClass + '(\\d+)',
+			var desktopRegex = lb.options.colDesktopClass + '(\\d+)',
+				tabletRegex = lb.options.colTabletClass + '(\\d+)',
+				phoneRegex = lb.options.colPhoneClass + '(\\d+)',
 				desktopRegexObj = new RegExp(desktopRegex, 'i'),
 				tabletRegexObj = new RegExp(tabletRegex, 'i'),
 				phoneRegexObj = new RegExp(phoneRegex, 'i');
@@ -178,18 +178,18 @@
 				colNum = (colNum = desktopRegexObj.exec(elClasses)) ? colNum[1] : ( (colNum = tabletRegexObj.exec(elClasses)) ? colNum[1] : phoneRegexObj.exec(elClasses)[1] );
 
 				if (!hasDesktop) {
-					$(this).addClass(gm.options.colDesktopClass + colNum);
+					$(this).addClass(lb.options.colDesktopClass + colNum);
 				}
 				if (!hasPhone) {
-					$(this).addClass(gm.options.colPhoneClass + colNum);
+					$(this).addClass(lb.options.colPhoneClass + colNum);
 				}
 				if (!hasTablet) {
-					$(this).addClass(gm.options.colTabletClass + colNum);
+					$(this).addClass(lb.options.colTabletClass + colNum);
 				}
 				// Adds default column classes - probably shouldn't go here, but since we're doing an expensive search to add the responsive classes, it'll do for now.
-				if (gm.options.addDefaultColumnClass) {
-					if (!$(this).hasClass(gm.options.colClass)) {
-						$(this).addClass(gm.options.colClass);
+				if (lb.options.addDefaultColumnClass) {
+					if (!$(this).hasClass(lb.options.colClass)) {
+						$(this).addClass(lb.options.colClass);
 					}
 				}
 			});
@@ -200,31 +200,31 @@
 		 * @method createControls
 		 * @returns null
 		 */
-		gm.createControls = function () {
-			gm.log("+ Create Controls");
+		lb.createControls = function () {
+			lb.log("+ Create Controls");
 			var buttons = [];
 			// Dynamically generated row template buttons
-			$.each(gm.options.controlButtons, function (i, val) {
-				var _class = gm.generateButtonClass(val);
-				buttons.push("<a title='Add Row " + _class + "' class='" + gm.options.controlButtonClass + " add" + _class + "'><span class='" + gm.options.controlButtonSpanClass + "'></span> " + _class + "</a>");
-				gm.generateClickHandler(val);
+			$.each(lb.options.controlButtons, function (i, val) {
+				var _class = lb.generateButtonClass(val);
+				buttons.push("<a title='Add Row " + _class + "' class='" + lb.options.controlButtonClass + " add" + _class + "'><span class='" + lb.options.controlButtonSpanClass + "'></span> " + _class + "</a>");
+				lb.generateClickHandler(val);
 			});
 
 			/*
 			 Generate the control bar markup
 			 */
-			gm.$el.prepend(
+			lb.$el.prepend(
 				$('<div/>',
-					{'id': gm.options.controlId, 'class': gm.options.gmClearClass}
+					{'id': lb.options.controlId, 'class': lb.options.gmClearClass}
 				).prepend(
-					$('<div/>', {"class": gm.options.rowClass}).html(
-						$('<div/>', {"class": gm.options.colDesktopClass + gm.options.colMax}).addClass(gm.options.colAdditionalClass).html(
-							$('<div/>', {'id': 'gm-addnew'})
-								.addClass(gm.options.gmBtnGroup)
-								.addClass(gm.options.gmFloatLeft).html(
+					$('<div/>', {"class": lb.options.rowClass}).html(
+						$('<div/>', {"class": lb.options.colDesktopClass + lb.options.colMax}).addClass(lb.options.colAdditionalClass).html(
+							$('<div/>', {'id': 'lb-addnew'})
+								.addClass(lb.options.gmBtnGroup)
+								.addClass(lb.options.gmFloatLeft).html(
 								buttons.join("")
 							)
-						).append(gm.options.controlAppend)
+						).append(lb.options.controlAppend)
 					)
 				)
 			);
@@ -236,7 +236,7 @@
 		 * @param {} myStylesLocation
 		 * @returns string
 		 */
-		gm.addCSS = function (myStylesLocation) {
+		lb.addCSS = function (myStylesLocation) {
 			if (myStylesLocation !== '') {
 				$('<link rel="stylesheet" href="' + myStylesLocation + '">').appendTo("head");
 			}
@@ -250,7 +250,7 @@
 		 * @param {} replacement
 		 * @returns CallExpression
 		 */
-		gm.cleanSubstring = function (regex, source, replacement) {
+		lb.cleanSubstring = function (regex, source, replacement) {
 			return source.replace(new RegExp(regex, 'g'), replacement);
 		};
 
@@ -260,38 +260,38 @@
 		 * @param {} mode
 		 * @returns null
 		 */
-		gm.switchLayoutMode = function (mode) {
-			var canvas = gm.$el.find("#" + gm.options.canvasId), temp_html = canvas.html(), regex1 = '', regex2 = '',
+		lb.switchLayoutMode = function (mode) {
+			var canvas = lb.$el.find("#" + lb.options.canvasId), temp_html = canvas.html(), regex1 = '', regex2 = '',
 				uimode = '';
 			// Reset previous changes
-			temp_html = gm.cleanSubstring(gm.options.classRenameSuffix, temp_html, '');
-			uimode = $('div.gm-layout-mode > button > span');
+			temp_html = lb.cleanSubstring(lb.options.classRenameSuffix, temp_html, '');
+			uimode = $('div.lb-layout-mode > button > span');
 			// Do replacements
 			switch (mode) {
 				case 768:
-					regex1 = '(' + gm.options.colDesktopClass + '\\d+)';
-					regex2 = '(' + gm.options.colPhoneClass + '\\d+)';
-					gm.options.currentClassMode = gm.options.colTabletClass;
-					gm.options.colSelector = gm.options.colTabletSelector;
+					regex1 = '(' + lb.options.colDesktopClass + '\\d+)';
+					regex2 = '(' + lb.options.colPhoneClass + '\\d+)';
+					lb.options.currentClassMode = lb.options.colTabletClass;
+					lb.options.colSelector = lb.options.colTabletSelector;
 					$(uimode).attr('class', 'fa fa-tablet').attr('title', 'Tablet');
 					break;
 				case 640:
-					regex1 = '(' + gm.options.colDesktopClass + '\\d+)';
-					regex2 = '(' + gm.options.colTabletClass + '\\d+)';
-					gm.options.currentClassMode = gm.options.colPhoneClass;
-					gm.options.colSelector = gm.options.colPhoneSelector;
+					regex1 = '(' + lb.options.colDesktopClass + '\\d+)';
+					regex2 = '(' + lb.options.colTabletClass + '\\d+)';
+					lb.options.currentClassMode = lb.options.colPhoneClass;
+					lb.options.colSelector = lb.options.colPhoneSelector;
 					$(uimode).attr('class', 'fa fa-mobile-phone').attr('title', 'Phone');
 					break;
 				default:
-					regex1 = '(' + gm.options.colPhoneClass + '\\d+)';
-					regex2 = '(' + gm.options.colTabletClass + '\\d+)';
-					gm.options.currentClassMode = gm.options.colDesktopClass;
-					gm.options.colSelector = gm.options.colDesktopSelector;
+					regex1 = '(' + lb.options.colPhoneClass + '\\d+)';
+					regex2 = '(' + lb.options.colTabletClass + '\\d+)';
+					lb.options.currentClassMode = lb.options.colDesktopClass;
+					lb.options.colSelector = lb.options.colDesktopSelector;
 					$(uimode).attr('class', 'fa fa-desktop').attr('title', 'Desktop');
 			}
-			gm.options.layoutDefaultMode = mode;
-			temp_html = temp_html.replace(new RegExp((regex1 + '(?=[^"]*">)'), 'gm'), '$1' + gm.options.classRenameSuffix);
-			temp_html = temp_html.replace(new RegExp((regex2 + '(?=[^"]*">)'), 'gm'), '$1' + gm.options.classRenameSuffix);
+			lb.options.layoutDefaultMode = mode;
+			temp_html = temp_html.replace(new RegExp((regex1 + '(?=[^"]*">)'), 'gm'), '$1' + lb.options.classRenameSuffix);
+			temp_html = temp_html.replace(new RegExp((regex2 + '(?=[^"]*">)'), 'gm'), '$1' + lb.options.classRenameSuffix);
 			canvas.html(temp_html);
 		};
 
@@ -301,168 +301,169 @@
 		 * @method initControls
 		 * @returns null
 		 */
-		gm.initControls = function () {
-			var canvas = gm.$el.find("#" + gm.options.canvasId);
-			gm.log("+ InitControls Running");
+		lb.initControls = function () {
+			var canvas = lb.$el.find("#" + lb.options.canvasId);
+			lb.log("+ InitControls Running");
 
 			// Turn editing on or off
-			gm.$el.on("click", ".gm-preview", function () {
-				if (gm.status) {
-					gm.deinitCanvas();
-					$(this).parent().find(".gm-edit-mode").prop('disabled', true);
+			lb.$el.on("click", ".lb-preview", function () {
+				if (lb.status) {
+					lb.deinitCanvas();
+					$(this).parent().find(".lb-edit-mode").prop('disabled', true);
 				} else {
-					gm.initCanvas();
-					$(this).parent().find(".gm-edit-mode").prop('disabled', false);
+					lb.initCanvas();
+					$(this).parent().find(".lb-edit-mode").prop('disabled', false);
 				}
-				$(this).toggleClass(gm.options.gmDangerClass);
+				$(this).toggleClass(lb.options.gmDangerClass);
 
 				// Switch Layout Mode
-			}).on("click", ".gm-layout-mode a", function () {
-				gm.switchLayoutMode($(this).data('width'));
+			}).on("click", ".lb-layout-mode a", function () {
+				lb.switchLayoutMode($(this).data('width'));
 
 				// Switch editing mode
-			}).on("click", ".gm-edit-mode", function () {
-				if (gm.mode === "visual") {
-					gm.deinitCanvas();
+			}).on("click", ".lb-edit-mode", function () {
+				if (lb.mode === "visual") {
+					lb.deinitCanvas();
 					canvas.html($('<textarea/>').attr("cols", 130).attr("rows", 25).val(canvas.html()));
-					gm.mode = "html";
-					$(this).parent().find(".gm-preview, .gm-layout-mode > button").prop('disabled', true);
+					lb.mode = "html";
+					$(this).parent().find(".lb-preview, .lb-layout-mode > button").prop('disabled', true);
 				} else {
 					var editedSource = canvas.find("textarea").val();
 					canvas.html(editedSource);
-					gm.initCanvas();
-					gm.mode = "visual";
-					$(this).parent().find(".gm-preview, .gm-layout-mode > button").prop('disabled', false);
+					lb.initCanvas();
+					lb.mode = "visual";
+					$(this).parent().find(".lb-preview, .lb-layout-mode > button").prop('disabled', false);
 				}
-				$(this).toggleClass(gm.options.gmDangerClass);
+				$(this).toggleClass(lb.options.gmDangerClass);
 
 				// Make region editable
-			}).on("click", "." + gm.options.gmEditRegion + ' .' + gm.options.gmContentRegion, function () {
-				//gm.log("clicked editable");
+			}).on("click", "." + lb.options.gmEditRegion + ' .' + lb.options.gmContentRegion, function () {
+				//lb.log("clicked editable");
 				if (!$(this).attr("contenteditable")) {
 					$(this).attr("contenteditable", true);
-					gm.rteControl("attach", $(this));
+					lb.rteControl("attach", $(this));
 				}
 
 				// Save Function
-			}).on("click", "a.gm-save", function () {
-				gm.deinitCanvas();
-				gm.saveremote();
+			}).on("click", "a.lb-save", function () {
+				lb.deinitCanvas();
+				lb.saveremote();
 
 				/* Row settings */
-			}).on("click", "a.gm-rowSettings", function () {
-				var row = $(this).closest(gm.options.rowSelector);
-				var drawer = row.find(".gm-rowSettingsDrawer");
+			}).on("click", "a.lb-rowSettings", function () {
+				var row = $(this).closest(lb.options.rowSelector);
+				var drawer = row.find(".lb-rowSettingsDrawer");
 				if (drawer.length > 0) {
 					drawer.remove();
 				} else {
-					row.prepend(gm.generateRowSettings(row));
+					row.prepend(lb.generateRowSettings(row));
 				}
 
 				// Change Row ID via rowsettings
-			}).on("blur", "input.gm-rowSettingsID", function () {
-				var row = $(this).closest(gm.options.rowSelector);
+			}).on("blur", "input.lb-rowSettingsID", function () {
+				var row = $(this).closest(lb.options.rowSelector);
 				row.attr("id", $(this).val());
 
 				// Remove a class from a row via rowsettings
-			}).on("click", ".gm-toggleRowClass", function () {
-				var row = $(this).closest(gm.options.rowSelector);
+			}).on("click", ".lb-toggleRowClass", function () {
+				var row = $(this).closest(lb.options.rowSelector);
 				var theClass = $(this).text().trim();
 				row.toggleClass(theClass);
 				if (row.hasClass(theClass)) {
-					$(this).addClass(gm.options.gmDangerClass);
+					$(this).addClass(lb.options.gmDangerClass);
 				} else {
-					$(this).removeClass(gm.options.gmDangerClass);
+					$(this).removeClass(lb.options.gmDangerClass);
 				}
 
 				/* Col settings */
-			}).on("click", "a.gm-colSettings", function () {
-				var col = $(this).closest(gm.options.colSelector);
-				var drawer = col.find(".gm-colSettingsDrawer");
+			}).on("click", "a.lb-colSettings", function () {
+				var col = $(this).closest(lb.options.colSelector);
+				var drawer = col.find(".lb-colSettingsDrawer");
 				if (drawer.length > 0) {
 					drawer.remove();
 				} else {
-					col.prepend(gm.generateColSettings(col));
+					col.prepend(lb.generateColSettings(col));
 				}
 
 				// Change Col ID via colsettings
-			}).on("blur", "input.gm-colSettingsID", function () {
-				var col = $(this).closest(gm.options.colSelector);
+			}).on("blur", "input.lb-colSettingsID", function () {
+				var col = $(this).closest(lb.options.colSelector);
 				col.attr("id", $(this).val());
 
 				// Remove a class from a row via rowsettings
-			}).on("click", ".gm-togglecolClass", function () {
-				var col = $(this).closest(gm.options.colSelector);
+			}).on("click", ".lb-togglecolClass", function () {
+				var col = $(this).closest(lb.options.colSelector);
 				var theClass = $(this).text().trim();
 				col.toggleClass(theClass);
 				if (col.hasClass(theClass)) {
-					$(this).addClass(gm.options.gmDangerClass);
+					$(this).addClass(lb.options.gmDangerClass);
 				} else {
-					$(this).removeClass(gm.options.gmDangerClass);
+					$(this).removeClass(lb.options.gmDangerClass);
 				}
 
 				// Add new column to existing row
-			}).on("click", "a.gm-addColumn", function () {
-				$(this).parent().after(gm.createCol(2));
-				gm.switchLayoutMode(gm.options.layoutDefaultMode);
-				gm.reset();
+			}).on("click", "a.lb-addColumn", function () {
+				$(this).parent().after(lb.createCol(2));
+				lb.switchLayoutMode(lb.options.layoutDefaultMode);
+				lb.reset();
 
 				// Add a nested row
-			}).on("click", "a.gm-addRow", function () {
-				gm.log("Adding nested row");
-				$(this).closest("." + gm.options.gmEditClass).append(
-					$("<div>").addClass(gm.options.rowClass)
-						.html(gm.createCol(6))
-						.append(gm.createCol(6)));
-				gm.reset();
+			}).on("click", "a.lb-addRow", function () {
+				lb.log("Adding nested row");
+				$(this).closest("." + lb.options.gmEditClass).append(
+					$("<div>").addClass(lb.options.rowClass)
+						.html(lb.createCol(6))
+						.append(lb.createCol(6)));
+				lb.reset();
 
 				// Decrease Column Size
-			}).on("click", "a.gm-colDecrease", function () {
-				var col = $(this).closest("." + gm.options.gmEditClass);
-				var t = gm.getColClass(col);
-				if (t.colWidth > parseInt(gm.options.colResizeStep, 10)) {
-					t.colWidth = (parseInt(t.colWidth, 10) - parseInt(gm.options.colResizeStep, 10));
-					col.switchClass(t.colClass, gm.options.currentClassMode + t.colWidth, 200);
+			}).on("click", "a.lb-colDecrease", function () {
+				var col = $(this).closest("." + lb.options.gmEditClass);
+				var t = lb.getColClass(col);
+				if (t.colWidth > parseInt(lb.options.colResizeStep, 10)) {
+					t.colWidth = (parseInt(t.colWidth, 10) - parseInt(lb.options.colResizeStep, 10));
+					col.switchClass(t.colClass, lb.options.currentClassMode + t.colWidth, 200);
 				}
 
 				// Increase Column Size
-			}).on("click", "a.gm-colIncrease", function () {
-				var col = $(this).closest("." + gm.options.gmEditClass);
-				var t = gm.getColClass(col);
-				if (t.colWidth < gm.options.colMax) {
-					t.colWidth = (parseInt(t.colWidth, 10) + parseInt(gm.options.colResizeStep, 10));
-					col.switchClass(t.colClass, gm.options.currentClassMode + t.colWidth, 200);
+			}).on("click", "a.lb-colIncrease", function () {
+				var col = $(this).closest("." + lb.options.gmEditClass);
+				var t = lb.getColClass(col);
+				if (t.colWidth < lb.options.colMax) {
+					t.colWidth = (parseInt(t.colWidth, 10) + parseInt(lb.options.colResizeStep, 10));
+					col.switchClass(t.colClass, lb.options.currentClassMode + t.colWidth, 200);
 				}
 
 				// Reset all teh things
-			}).on("click", "a.gm-resetgrid", function () {
+			}).on("click", "a.lb-resetgrid", function () {
 				canvas.html("");
-				gm.reset();
+				lb.reset();
 
 				// Remove a col or row
-			}).on("click", "a.gm-removeCol", function () {
-				$(this).closest("." + gm.options.gmEditClass).animate({
+			}).on("click", "a.lb-removeCol", function () {
+				$(this).closest("." + lb.options.gmEditClass).animate({
 					opacity: 'hide',
 					width: 'hide',
 					height: 'hide'
 				}, 400, function () {
 					$(this).remove();
 				});
-				gm.log("Column Removed");
+				lb.log("Column Removed");
 
-			}).on("click", "a.gm-removeRow", function () {
-				gm.log($(this).closest("." + gm.options.colSelector));
-				$(this).closest("." + gm.options.gmEditClass).animate({opacity: 'hide', height: 'hide'}, 400, function () {
+			}).on("click", "a.lb-removeRow", function () {
+				lb.log($(this).closest("." + lb.options.colSelector));
+				$(this).closest("." + lb.options.gmEditClass).animate({opacity: 'hide', height: 'hide'}, 400, function () {
 					$(this).remove();
 					// Check for multiple editable regions and merge?
 
 				});
-				gm.log("Row Removed");
+				lb.log("Row Removed");
 
 				// For all the above, prevent default.
-			}).on("click", "a.gm-resetgrid, a.gm-remove, a.gm-removeRow, a.gm-save, button.gm-preview, a.gm-viewsource, a.gm-addColumn, a.gm-colDecrease, a.gm-colIncrease", function (e) {
-				gm.log("Clicked: " + $.grep((this).className.split(" "), function (v) {
-						return v.indexOf('gm-') === 0;
+				// adding maximize and minimize width  size
+			}).on("click", "a.lb-resetgrid, a.lb-remove, a.lb-removeRow, a.lb-save, button.lb-preview, a.lb-viewsource, a.lb-addColumn, a.lb-colDecrease, a.lb-colIncrease", function (e) {
+				lb.log("Clicked: " + $.grep((this).className.split(" "), function (v) {
+						return v.indexOf('lb-') === 0;
 					}).join());
 				e.preventDefault();
 			});
@@ -475,16 +476,16 @@
 		 * @method initGlobalCustomControls
 		 * @returns null
 		 */
-		gm.initGlobalCustomControls = function () {
-			var canvas = gm.$el.find("#" + gm.options.canvasId),
+		lb.initGlobalCustomControls = function () {
+			var canvas = lb.$el.find("#" + lb.options.canvasId),
 				elems = [],
 				callback = null,
 				btnClass = '';
 
 			$.each(['row', 'col'], function (i, control_type) {
-				if (typeof gm.options.customControls['global_' + control_type] !== 'undefined') {
-					elems = canvas.find(gm.options[control_type + 'Selector']);
-					$.each(gm.options.customControls['global_' + control_type], function (i, curr_control) {
+				if (typeof lb.options.customControls['global_' + control_type] !== 'undefined') {
+					elems = canvas.find(lb.options[control_type + 'Selector']);
+					$.each(lb.options.customControls['global_' + control_type], function (i, curr_control) {
 						// controls with no valid callbacks set are skipped
 						if (typeof curr_control.callback === 'undefined') {
 							return;
@@ -507,14 +508,14 @@
 
 						btnObj = {
 							element: 'a',
-							btnClass: 'gm-' + btnClass,
+							btnClass: 'lb-' + btnClass,
 							iconClass: curr_control.iconClass,
 							btnLabel: curr_control.btnLabel,
 							title: curr_control.title
 						};
 
 						$.each(elems, function (i, current_elem) {
-							gm.setupCustomBtn(current_elem, curr_control.loc, 'window', curr_control.callback, btnObj);
+							lb.setupCustomBtn(current_elem, curr_control.loc, 'window', curr_control.callback, btnObj);
 						});
 					});
 				}
@@ -527,8 +528,8 @@
 		 * @method initCustomControls
 		 * @returns null
 		 */
-		gm.initCustomControls = function () {
-			var canvas = gm.$el.find("#" + gm.options.canvasId),
+		lb.initCustomControls = function () {
+			var canvas = lb.$el.find("#" + lb.options.canvasId),
 				callbackParams = '',
 				callbackScp = '',
 				callbackFunc = '',
@@ -537,7 +538,7 @@
 				iconClass = '',
 				btnLabel = '';
 
-			$(('.' + gm.options.colClass + ':data,' + ' .' + gm.options.rowClass + ':data'), canvas).each(function () {
+			$(('.' + lb.options.colClass + ':data,' + ' .' + lb.options.rowClass + ':data'), canvas).each(function () {
 				for (prop in $(this).data()) {
 					if (prop.indexOf('gmButton') === 0) {
 						callbackFunc = prop.replace('gmButton', '');
@@ -553,11 +554,11 @@
 						callbackScp = callbackParams[0];
 						btnObj = {
 							element: 'a',
-							btnClass: ('gm-' + callbackFunc),
+							btnClass: ('lb-' + callbackFunc),
 							iconClass: iconClass,
 							btnLabel: btnLabel
 						};
-						gm.setupCustomBtn(this, btnLoc, callbackScp, callbackFunc, btnObj);
+						lb.setupCustomBtn(this, btnLoc, callbackScp, callbackFunc, btnObj);
 						break;
 					}
 				}
@@ -581,12 +582,12 @@
 		 * @param {} btnObj
 		 * @returns Literal
 		 */
-		gm.setupCustomBtn = function (container, btnLoc, callbackScp, callbackFunc, btnObj) {
+		lb.setupCustomBtn = function (container, btnLoc, callbackScp, callbackFunc, btnObj) {
 			var callback = null;
 
 			// Ensure we have a valid callback, if not skip
 			if (typeof callbackFunc === 'string') {
-				callback = gm.isValidCallback(callbackScp, callbackFunc.toLowerCase());
+				callback = lb.isValidCallback(callbackScp, callbackFunc.toLowerCase());
 			} else if (typeof callbackFunc === 'function') {
 				callback = callbackFunc;
 			} else {
@@ -596,7 +597,7 @@
 			btnLoc = (btnLoc === 'bottom') ? ':last' : ':first';
 
 			// Add the button to the selected toolbar
-			$(('.' + gm.options.gmToolClass + btnLoc), container).append(gm.buttonFactory([btnObj])).find(':last').on('click', function (e) {
+			$(('.' + lb.options.gmToolClass + btnLoc), container).append(lb.buttonFactory([btnObj])).find(':last').on('click', function (e) {
 				callback(container, this);
 				e.preventDefault();
 			});
@@ -611,8 +612,8 @@
 		 returns void
 		 */
 
-		gm.clearComments = function (elem) {
-			$(elem, '#' + gm.options.canvasId).contents().filter(function () {
+		lb.clearComments = function (elem) {
+			$(elem, '#' + lb.options.canvasId).contents().filter(function () {
 				return this.nodeType === 8;
 			}).remove();
 		};
@@ -627,7 +628,7 @@
 		 * @param {} callbackFunc
 		 * @returns callback
 		 */
-		gm.isValidCallback = function (callbackScp, callbackFunc) {
+		lb.isValidCallback = function (callbackScp, callbackFunc) {
 			var callback = null;
 
 			if (callbackScp === 'window') {
@@ -653,16 +654,16 @@
 		 * @param {} col
 		 * @return ObjectExpression
 		 */
-		gm.getColClass = function (col) {
+		lb.getColClass = function (col) {
 			var colClass = $.grep(col.attr("class").split(" "), function (v) {
-				return v.indexOf(gm.options.currentClassMode) === 0;
+				return v.indexOf(lb.options.currentClassMode) === 0;
 			}).join();
-			var colWidth = colClass.replace(gm.options.currentClassMode, "");
+			var colWidth = colClass.replace(lb.options.currentClassMode, "");
 			return {colClass: colClass, colWidth: colWidth};
 		};
 
 		/*
-		 Run (if set) any custom init/deinit filters on the gridmanager canvas
+		 Run (if set) any custom init/deinit filters on the layout_builder canvas
 		 @canvasElem - canvas wrapper container with the entire layout html
 		 @isInit - flag that indicates if the method is running during init or deinit.
 		 true - if its running during the init process, or false - during the deinit (cleanup) process
@@ -670,44 +671,44 @@
 		 returns void
 		 */
 
-		gm.runFilter = function (canvasElem, isInit) {
-			if (typeof gm.options.filterCallback === 'function') {
-				gm.options.filterCallback(canvasElem, isInit);
+		lb.runFilter = function (canvasElem, isInit) {
+			if (typeof lb.options.filterCallback === 'function') {
+				lb.options.filterCallback(canvasElem, isInit);
 			}
-			if (gm.options.editableRegionEnabled) {
-				gm.editableAreaFilter(canvasElem, isInit);
+			if (lb.options.editableRegionEnabled) {
+				lb.editableAreaFilter(canvasElem, isInit);
 			}
 		};
 
 		/**
-		 * Turns canvas into gm-editing mode - does most of the hard work here
+		 * Turns canvas into lb-editing mode - does most of the hard work here
 		 * @method initCanvas
 		 * @returns null
 		 */
-		gm.initCanvas = function () {
+		lb.initCanvas = function () {
 			// cache canvas
-			var canvas = gm.$el.find("#" + gm.options.canvasId);
-			gm.switchLayoutMode(gm.options.layoutDefaultMode);
-			var cols = canvas.find(gm.options.colSelector);
-			var rows = canvas.find(gm.options.rowSelector);
-			gm.log("+ InitCanvas Running");
+			var canvas = lb.$el.find("#" + lb.options.canvasId);
+			lb.switchLayoutMode(lb.options.layoutDefaultMode);
+			var cols = canvas.find(lb.options.colSelector);
+			var rows = canvas.find(lb.options.rowSelector);
+			lb.log("+ InitCanvas Running");
 			// Show the template controls
-			gm.$el.find("#gm-addnew").show();
+			lb.$el.find("#lb-addnew").show();
 			// Sort Rows First
-			gm.activateRows(rows);
+			lb.activateRows(rows);
 			// Now Columns
-			gm.activateCols(cols);
+			lb.activateCols(cols);
 			// Run custom init callback filter
-			gm.runFilter(canvas, true);
+			lb.runFilter(canvas, true);
 			// Get cols & rows again after filter execution
-			cols = canvas.find(gm.options.colSelector);
-			rows = canvas.find(gm.options.rowSelector);
+			cols = canvas.find(lb.options.colSelector);
+			rows = canvas.find(lb.options.rowSelector);
 			// Make Rows sortable
 			canvas.sortable({
 				items: rows,
 				axis: 'y',
-				placeholder: gm.options.rowSortingClass,
-				handle: ".gm-moveRow",
+				placeholder: lb.options.rowSortingClass,
+				handle: ".lb-moveRow",
 				forcePlaceholderSize: true, opacity: 0.7, revert: true,
 				tolerance: "pointer",
 				cursor: "move"
@@ -718,9 +719,9 @@
 			 */
 			$.each(rows, function (i, val) {
 				$(val).sortable({
-					items: $(val).find(gm.options.colSelector),
+					items: $(val).find(lb.options.colSelector),
 					axis: 'x',
-					handle: ".gm-moveCol",
+					handle: ".lb-moveCol",
 					forcePlaceholderSize: true, opacity: 0.7, revert: true,
 					tolerance: "pointer",
 					containment: $(val),
@@ -729,18 +730,18 @@
 			});
 			/* Make rows sortable
 			 cols.sortable({
-			 items: gm.options.rowSelector,
+			 items: lb.options.rowSelector,
 			 axis: 'y',
-			 handle: ".gm-moveRow",
+			 handle: ".lb-moveRow",
 			 forcePlaceholderSize: true,   opacity: 0.7,  revert: true,
 			 tolerance: "pointer",
 			 cursor: "move"
 			 }); */
-			gm.status = true;
-			gm.mode = "visual";
-			gm.initCustomControls();
-			gm.initGlobalCustomControls();
-			gm.initNewContentElem();
+			lb.status = true;
+			lb.mode = "visual";
+			lb.initCustomControls();
+			lb.initGlobalCustomControls();
+			lb.initNewContentElem();
 		};
 
 		/**
@@ -748,23 +749,23 @@
 		 * @method deinitCanvas
 		 * @returns null
 		 */
-		gm.deinitCanvas = function () {
+		lb.deinitCanvas = function () {
 			// cache canvas
-			var canvas = gm.$el.find("#" + gm.options.canvasId);
-			var cols = canvas.find(gm.options.colSelector);
-			var rows = canvas.find(gm.options.rowSelector);
+			var canvas = lb.$el.find("#" + lb.options.canvasId);
+			var cols = canvas.find(lb.options.colSelector);
+			var rows = canvas.find(lb.options.rowSelector);
 
-			gm.log("- deInitCanvas Running");
+			lb.log("- deInitCanvas Running");
 			// Hide template control
-			gm.$el.find("#gm-addnew").hide();
+			lb.$el.find("#lb-addnew").hide();
 			// Sort Rows First
-			gm.deactivateRows(rows);
+			lb.deactivateRows(rows);
 			// Now Columns
-			gm.deactivateCols(cols);
+			lb.deactivateCols(cols);
 			// Clean markup
-			gm.cleanup();
-			gm.runFilter(canvas, false);
-			gm.status = false;
+			lb.cleanup();
+			lb.runFilter(canvas, false);
+			lb.status = false;
 		};
 
 		/**
@@ -772,14 +773,14 @@
 		 * @method saveremote
 		 * @returns null
 		 */
-		gm.saveremote = function () {
-			var canvas = gm.$el.find("#" + gm.options.canvasId);
+		lb.saveremote = function () {
+			var canvas = lb.$el.find("#" + lb.options.canvasId);
 			$.ajax({
 				type: "POST",
-				url: gm.options.remoteURL,
+				url: lb.options.remoteURL,
 				data: {content: canvas.html()}
 			});
-			gm.log("Save Function Called");
+			lb.log("Save Function Called");
 		};
 
 
@@ -791,11 +792,11 @@
 		 * @param {object} rows - rows to act on
 		 * @returns null
 		 */
-		gm.activateRows = function (rows) {
-			gm.log("++ Activate Rows");
-			rows.addClass(gm.options.gmEditClass)
-				.prepend(gm.toolFactory(gm.options.rowButtonsPrepend))
-				.append(gm.toolFactory(gm.options.rowButtonsAppend));
+		lb.activateRows = function (rows) {
+			lb.log("++ Activate Rows");
+			rows.addClass(lb.options.gmEditClass)
+				.prepend(lb.toolFactory(lb.options.rowButtonsPrepend))
+				.append(lb.toolFactory(lb.options.rowButtonsAppend));
 		};
 
 		/**
@@ -805,9 +806,9 @@
 		 * @param {object} rows - rows to act on
 		 * @returns null
 		 */
-		gm.deactivateRows = function (rows) {
-			gm.log("-- DeActivate Rows");
-			rows.removeClass(gm.options.gmEditClass)
+		lb.deactivateRows = function (rows) {
+			lb.log("-- DeActivate Rows");
+			rows.removeClass(lb.options.gmEditClass)
 				.removeClass("ui-sortable")
 				.removeAttr("style");
 		};
@@ -818,12 +819,12 @@
 		 * @param {array} colWidths - array of css class integers, i.e [2,4,5]
 		 * @returns row
 		 */
-		gm.createRow = function (colWidths) {
-			var row = $("<div/>", {"class": gm.options.rowClass + " " + gm.options.gmEditClass});
+		lb.createRow = function (colWidths) {
+			var row = $("<div/>", {"class": lb.options.rowClass + " " + lb.options.gmEditClass});
 			$.each(colWidths, function (i, val) {
-				row.append(gm.createCol(val));
+				row.append(lb.createCol(val));
 			});
-			gm.log("++ Created Row");
+			lb.log("++ Created Row");
 			return row;
 		};
 
@@ -833,35 +834,35 @@
 		 * @param {object} row - row to act on
 		 * @return MemberExpression
 		 */
-		gm.generateRowSettings = function (row) {
+		lb.generateRowSettings = function (row) {
 			// Row class toggle buttons
 			var classBtns = [];
-			$.each(gm.options.rowCustomClasses, function (i, val) {
+			$.each(lb.options.rowCustomClasses, function (i, val) {
 				var btn = $("<button/>")
-					.addClass("gm-toggleRowClass")
-					.addClass(gm.options.controlButtonClass)
+					.addClass("lb-toggleRowClass")
+					.addClass(lb.options.controlButtonClass)
 					.append(
 						$("<span/>")
-							.addClass(gm.options.controlButtonSpanClass)
+							.addClass(lb.options.controlButtonSpanClass)
 					).append(" " + val);
 
 				if (row.hasClass(val)) {
-					btn.addClass(gm.options.gmDangerClass);
+					btn.addClass(lb.options.gmDangerClass);
 				}
 				classBtns.push(btn[0].outerHTML);
 			});
 			// Row settings drawer
 			var html = $("<div/>")
-				.addClass("gm-rowSettingsDrawer")
-				.addClass(gm.options.gmToolClass)
-				.addClass(gm.options.gmClearClass)
+				.addClass("lb-rowSettingsDrawer")
+				.addClass(lb.options.gmToolClass)
+				.addClass(lb.options.gmClearClass)
 				.prepend($("<div />")
-					.addClass(gm.options.gmBtnGroup)
-					.addClass(gm.options.gmFloatLeft)
+					.addClass(lb.options.gmBtnGroup)
+					.addClass(lb.options.gmFloatLeft)
 					.html(classBtns.join("")))
 				.append($("<div />").addClass("pull-right").html(
 					$("<label />").html("Row ID ").append(
-						$("<input>").addClass("gm-rowSettingsID").attr({type: 'text', placeholder: 'Row ID', value: row.attr("id")})
+						$("<input>").addClass("lb-rowSettingsID").attr({type: 'text', placeholder: 'Row ID', value: row.attr("id")})
 					)
 				));
 
@@ -874,35 +875,35 @@
 		 * @param {object} col - Column to act on
 		 * @return MemberExpression
 		 */
-		gm.generateColSettings = function (col) {
+		lb.generateColSettings = function (col) {
 			// Col class toggle buttons
 			var classBtns = [];
-			$.each(gm.options.colCustomClasses, function (i, val) {
+			$.each(lb.options.colCustomClasses, function (i, val) {
 				var btn = $("<button/>")
-					.addClass("gm-togglecolClass")
-					.addClass(gm.options.controlButtonClass)
+					.addClass("lb-togglecolClass")
+					.addClass(lb.options.controlButtonClass)
 					.append(
 						$("<span/>")
-							.addClass(gm.options.controlButtonSpanClass)
+							.addClass(lb.options.controlButtonSpanClass)
 					).append(" " + val);
 				if (col.hasClass(val)) {
-					btn.addClass(gm.options.gmDangerClass);
+					btn.addClass(lb.options.gmDangerClass);
 				}
 				classBtns.push(btn[0].outerHTML);
 			});
 			// col settings drawer
 			var html = $("<div/>")
-				.addClass("gm-colSettingsDrawer")
-				.addClass(gm.options.gmToolClass)
-				.addClass(gm.options.gmClearClass)
+				.addClass("lb-colSettingsDrawer")
+				.addClass(lb.options.gmToolClass)
+				.addClass(lb.options.gmClearClass)
 				.prepend($("<div />")
-					.addClass(gm.options.gmBtnGroup)
-					.addClass(gm.options.gmFloatLeft)
+					.addClass(lb.options.gmBtnGroup)
+					.addClass(lb.options.gmFloatLeft)
 					.html(classBtns.join("")))
 				.append($("<div />").addClass("pull-right").html(
 					$("<label />").html("col ID ").append(
 						$("<input>")
-							.addClass("gm-colSettingsID")
+							.addClass("lb-colSettingsID")
 							.attr({type: 'text', placeholder: 'col ID', value: col.attr("id")})
 					)
 				));
@@ -919,14 +920,14 @@
 		 * @param {object} cols - elements to act on
 		 * @returns null
 		 */
-		gm.activateCols = function (cols) {
-			cols.addClass(gm.options.gmEditClass);
+		lb.activateCols = function (cols) {
+			cols.addClass(lb.options.gmEditClass);
 			// For each column,
 			$.each(cols, function (i, column) {
-				$(column).prepend(gm.toolFactory(gm.options.colButtonsPrepend));
-				$(column).append(gm.toolFactory(gm.options.colButtonsAppend));
+				$(column).prepend(lb.toolFactory(lb.options.colButtonsPrepend));
+				$(column).append(lb.toolFactory(lb.options.colButtonsAppend));
 			});
-			gm.log("++ Activate Cols Ran");
+			lb.log("++ Activate Cols Ran");
 		};
 
 		/**
@@ -935,13 +936,13 @@
 		 * @param {object} cols - elements to act on
 		 * @returns null
 		 */
-		gm.deactivateCols = function (cols) {
-			cols.removeClass(gm.options.gmEditClass)
-				.removeClass(gm.options.gmEditClassSelected)
+		lb.deactivateCols = function (cols) {
+			cols.removeClass(lb.options.gmEditClass)
+				.removeClass(lb.options.gmEditClassSelected)
 				.removeClass("ui-sortable");
 			$.each(cols.children(), function (i, val) {
 				// Grab contents of editable regions and unwrap
-				if ($(val).hasClass(gm.options.gmEditRegion)) {
+				if ($(val).hasClass(lb.options.gmEditRegion)) {
 					if ($(val).html() !== '') {
 						$(val).contents().unwrap();
 					} else {
@@ -950,7 +951,7 @@
 					}
 				}
 			});
-			gm.log("-- deActivate Cols Ran");
+			lb.log("-- deActivate Cols Ran");
 		};
 
 		/**
@@ -959,18 +960,18 @@
 		 * @param {integer} size - width of the column to create, i.e 6
 		 * @returns null
 		 */
-		gm.createCol = function (size) {
+		lb.createCol = function (size) {
 			var col = $("<div/>")
-				.addClass(gm.options.colClass)
-				.addClass(gm.options.colDesktopClass + size)
-				.addClass(gm.options.colTabletClass + size)
-				.addClass(gm.options.colPhoneClass + size)
-				.addClass(gm.options.gmEditClass)
-				.addClass(gm.options.colAdditionalClass)
-				.html(gm.toolFactory(gm.options.colButtonsPrepend))
-				.prepend(gm.toolFactory(gm.options.colButtonsPrepend))
-				.append(gm.toolFactory(gm.options.colButtonsAppend));
-			gm.log("++ Created Column " + size);
+				.addClass(lb.options.colClass)
+				.addClass(lb.options.colDesktopClass + size)
+				.addClass(lb.options.colTabletClass + size)
+				.addClass(lb.options.colPhoneClass + size)
+				.addClass(lb.options.gmEditClass)
+				.addClass(lb.options.colAdditionalClass)
+				.html(lb.toolFactory(lb.options.colButtonsPrepend))
+				.prepend(lb.toolFactory(lb.options.colButtonsPrepend))
+				.append(lb.toolFactory(lb.options.colButtonsAppend));
+			lb.log("++ Created Column " + size);
 			return col;
 		};
 
@@ -985,14 +986,14 @@
 
 		 returns void
 		 */
-		gm.addEditableAreaClick = function (container, btn) {
-			var cTagOpen = '<!--' + gm.options.gmEditRegion + '-->',
-				cTagClose = '<!--\/' + gm.options.gmEditRegion + '-->',
+		lb.addEditableAreaClick = function (container, btn) {
+			var cTagOpen = '<!--' + lb.options.gmEditRegion + '-->',
+				cTagClose = '<!--\/' + lb.options.gmEditRegion + '-->',
 				elem = null;
-			$(('.' + gm.options.gmToolClass + ':last'), container)
-				.before(elem = $('<div>').addClass(gm.options.gmEditRegion + ' ' + gm.options.contentDraggableClass)
-					.append(gm.options.controlContentElem + '<div class="' + gm.options.gmContentRegion + '"><p>Enter Text Content</p></div>')).before(cTagClose).prev().before(cTagOpen);
-			gm.initNewContentElem(elem);
+			$(('.' + lb.options.gmToolClass + ':last'), container)
+				.before(elem = $('<div>').addClass(lb.options.gmEditRegion + ' ' + lb.options.contentDraggableClass)
+					.append(lb.options.controlContentElem + '<div class="' + lb.options.gmContentRegion + '"><p>Enter Text Content</p></div>')).before(cTagClose).prev().before(cTagOpen);
+			lb.initNewContentElem(elem);
 		};
 
 		/*
@@ -1002,31 +1003,31 @@
 		 returns void
 		 */
 
-		gm.initNewContentElem = function (newElem) {
+		lb.initNewContentElem = function (newElem) {
 			var parentCols = null;
 
 			if (typeof newElem === 'undefined') {
-				parentCols = gm.$el.find('.' + gm.options.colClass);
+				parentCols = lb.$el.find('.' + lb.options.colClass);
 			} else {
-				parentCols = newElem.closest('.' + gm.options.colClass);
+				parentCols = newElem.closest('.' + lb.options.colClass);
 			}
 
 			$.each(parentCols, function (i, col) {
-				$(col).on('click', '.gm-delete', function (e) {
-					$(this).closest('.' + gm.options.gmEditRegion).remove();
-					gm.resetCommentTags(col);
+				$(col).on('click', '.lb-delete', function (e) {
+					$(this).closest('.' + lb.options.gmEditRegion).remove();
+					lb.resetCommentTags(col);
 					e.preventDefault();
 				});
 				$(col).sortable({
-					items: '.' + gm.options.contentDraggableClass,
+					items: '.' + lb.options.contentDraggableClass,
 					axis: 'y',
-					placeholder: gm.options.rowSortingClass,
-					handle: "." + gm.options.controlMove,
+					placeholder: lb.options.rowSortingClass,
+					handle: "." + lb.options.controlMove,
 					forcePlaceholderSize: true, opacity: 0.7, revert: true,
 					tolerance: "pointer",
 					cursor: "move",
 					stop: function (e, ui) {
-						gm.resetCommentTags($(ui.item).parent());
+						lb.resetCommentTags($(ui.item).parent());
 					}
 				});
 			});
@@ -1039,13 +1040,13 @@
 		 returns void
 		 */
 
-		gm.resetCommentTags = function (elem) {
-			var cTagOpen = '<!--' + gm.options.gmEditRegion + '-->',
-				cTagClose = '<!--\/' + gm.options.gmEditRegion + '-->';
+		lb.resetCommentTags = function (elem) {
+			var cTagOpen = '<!--' + lb.options.gmEditRegion + '-->',
+				cTagClose = '<!--\/' + lb.options.gmEditRegion + '-->';
 			// First remove all existing comments
-			gm.clearComments(elem);
+			lb.clearComments(elem);
 			// Now replace these comment tags
-			$('.' + gm.options.gmEditRegion, elem).before(cTagOpen).after(cTagClose);
+			$('.' + lb.options.gmEditRegion, elem).before(cTagOpen).after(cTagClose);
 		};
 
 		/*
@@ -1055,12 +1056,12 @@
 		 returns void
 		 */
 
-		gm.selectColClick = function (container, btn) {
+		lb.selectColClick = function (container, btn) {
 			$(btn).toggleClass('fa fa-square-o fa fa-check-square-o');
 			if ($(btn).hasClass('fa-check-square-o')) {
-				$(container).addClass(gm.options.gmEditClassSelected);
+				$(container).addClass(lb.options.gmEditClassSelected);
 			} else {
-				$(container).removeClass(gm.options.gmEditClassSelected);
+				$(container).removeClass(lb.options.gmEditClassSelected);
 			}
 		};
 
@@ -1068,22 +1069,22 @@
 		/*
 		 Filter method to restore editable regions in edit mode.
 		 */
-		gm.editableAreaFilter = function (canvasElem, isInit) {
+		lb.editableAreaFilter = function (canvasElem, isInit) {
 			if (isInit) {
-				var cTagOpen = '<!--' + gm.options.gmEditRegion + '-->',
-					cTagClose = '<!--\/' + gm.options.gmEditRegion + '-->',
+				var cTagOpen = '<!--' + lb.options.gmEditRegion + '-->',
+					cTagClose = '<!--\/' + lb.options.gmEditRegion + '-->',
 					regex = new RegExp('(?:' + cTagOpen + ')\\s*([\\s\\S]+?)\\s*(?:' + cTagClose + ')', 'g'),
 					html = $(canvasElem).html(),
-					rep = cTagOpen + '<div class="' + gm.options.gmEditRegion + ' ' + gm.options.contentDraggableClass + '">' + gm.options.controlContentElem + '<div class="' + gm.options.gmContentRegion + '">$1</div></div>' + cTagClose;
+					rep = cTagOpen + '<div class="' + lb.options.gmEditRegion + ' ' + lb.options.contentDraggableClass + '">' + lb.options.controlContentElem + '<div class="' + lb.options.gmContentRegion + '">$1</div></div>' + cTagClose;
 
 				html = html.replace(regex, rep);
 				$(canvasElem).html(html);
-				gm.log("editableAreaFilter init ran");
+				lb.log("editableAreaFilter init ran");
 			} else {
-				$('.' + gm.options.controlNestedEditable, canvasElem).remove();
-				$('.' + gm.options.gmContentRegion).contents().unwrap();
+				$('.' + lb.options.controlNestedEditable, canvasElem).remove();
+				$('.' + lb.options.gmContentRegion).contents().unwrap();
 
-				gm.log("editableAreaFilter deinit ran");
+				lb.log("editableAreaFilter deinit ran");
 			}
 		};
 
@@ -1094,11 +1095,11 @@
 		 * @param {array} btns - Array of buttons (see options)
 		 * @return MemberExpression
 		 */
-		gm.toolFactory = function (btns) {
+		lb.toolFactory = function (btns) {
 			var tools = $("<div/>")
-				.addClass(gm.options.gmToolClass)
-				.addClass(gm.options.gmClearClass)
-				.html(gm.buttonFactory(btns));
+				.addClass(lb.options.gmToolClass)
+				.addClass(lb.options.gmClearClass)
+				.html(lb.buttonFactory(btns));
 			return tools[0].outerHTML;
 		};
 
@@ -1108,7 +1109,7 @@
 		 * @param {array} btns - Array of button configurations (see options)
 		 * @return CallExpression
 		 */
-		gm.buttonFactory = function (btns) {
+		lb.buttonFactory = function (btns) {
 			var buttons = [];
 			$.each(btns, function (i, val) {
 				val.btnLabel = (typeof val.btnLabel === 'undefined') ? '' : val.btnLabel;
@@ -1119,12 +1120,10 @@
 		};
 
 		/**
-		 * Basically just turns [2,4,6] into 2-4-6
-		 * @method generateButtonClass
-		 * @param {array} arr - An array of widths
-		 * @return string
+		 *  Create button for choosing layout like [12,[6,6]]
+		 *   and create classes and id
 		 */
-		gm.generateButtonClass = function (arr) {
+		lb.generateButtonClass = function (arr) {
 			var string = "";
 			$.each(arr, function (i, val) {
 				string = string + "-" + val;
@@ -1133,18 +1132,16 @@
 		};
 
 		/**
-		 * click handlers for dynamic row template buttons
-		 * @method generateClickHandler
-		 * @param {array} colWidths - array of column widths, i.e [2,3,2]
-		 * @returns null
+		 *  Click Add one complete grid layout markup as per no of coloumn [12,[6,6]] layout
+		 * @param colWidths
 		 */
-		gm.generateClickHandler = function (colWidths) {
-			var string = "a.add" + gm.generateButtonClass(colWidths);
-			var canvas = gm.$el.find("#" + gm.options.canvasId);
-			gm.$el.on("click", string, function (e) {
-				gm.log("Clicked " + string);
-				canvas.prepend(gm.createRow(colWidths));
-				gm.reset();
+		lb.generateClickHandler = function (colWidths) {
+			var string = "a.add" + lb.generateButtonClass(colWidths);
+			var canvas = lb.$el.find("#" + lb.options.canvasId);
+			lb.$el.on("click", string, function (e) {
+				lb.log("Clicked " + string);
+				canvas.prepend(lb.createRow(colWidths));
+				lb.reset();
 				e.preventDefault();
 			});
 		};
@@ -1158,60 +1155,30 @@
 		 * @param {object} element  - object to attach an RTE to
 		 * @returns null
 		 */
-		gm.rteControl = function (action, element) {
-			gm.log("RTE " + gm.options.rte + ' ' + action);
-
+		lb.rteControl = function (action, element) {
+			lb.log("RTE " + lb.options.rte + ' ' + action);
 			switch (action) {
-				case 'init':
-					if (typeof window.CKEDITOR !== 'undefined') {
-						gm.options.rte = 'ckeditor';
-						gm.log("++ CKEDITOR Found");
-						window.CKEDITOR.disableAutoInline = true;
-					}
-					if (typeof window.tinymce !== 'undefined') {
-						gm.options.rte = 'tinymce';
-						gm.log("++ TINYMCE Found");
-					}
-					break;
 				case 'attach':
-					switch (gm.options.rte) {
+					switch (lb.options.rte) {
 						case 'tinymce':
 							if (!(element).hasClass("mce-content-body")) {
-								element.tinymce(gm.options.tinymce.config);
+								element.tinymce(lb.options.tinymce.config);
 							}
 							break;
-
-						case 'ckeditor':
-							$(element).ckeditor(gm.options.ckeditor);
-
-							break;
 						default:
-							gm.log("No RTE specified for attach");
 					}
 					break; //end Attach
 				case 'stop':
-					switch (gm.options.rte) {
+					switch (lb.options.rte) {
 						case 'tinymce':
 							// destroy TinyMCE
 							window.tinymce.remove();
-							gm.log("-- TinyMCE destroyed");
 							break;
-
-						case 'ckeditor':
-							// destroy ckeditor
-							for (var name in window.CKEDITOR.instances) {
-								window.CKEDITOR.instances[name].destroy();
-							}
-							gm.log("-- CKEDITOR destroyed");
-							break;
-
 						default:
-							gm.log("No RTE specified for stop");
 					}
 					break; //end stop
-
 				default:
-					gm.log("No RTE Action specified");
+					lb.log("No RTE Action specified");
 			}
 		};
 
@@ -1223,10 +1190,10 @@
 		 * @method reset
 		 * @returns null
 		 */
-		gm.reset = function () {
-			gm.log("~~RESET~~");
-			gm.deinitCanvas();
-			gm.initCanvas();
+		lb.reset = function () {
+
+			lb.deinitCanvas();
+			lb.initCanvas();
 		};
 
 		/**
@@ -1235,13 +1202,13 @@
 		 * @returns null
 		 */
 
-		gm.cleanup = function () {
+		lb.cleanup = function () {
 
 			var canvas,
 				content;
 
 			// cache canvas
-			canvas = gm.$el.find("#" + gm.options.canvasId);
+			canvas = lb.$el.find("#" + lb.options.canvasId);
 
 			/**
 			 * Determine the current edit mode and get the content based upon the resultant
@@ -1250,13 +1217,13 @@
 			 * edit mode (source): canvas.find('textarea').val()
 			 * edit mode (visual): canvas.html()
 			 */
-			content = gm.mode !== "visual" ? canvas.find('textarea').val() : canvas.html();
+			content = lb.mode !== "visual" ? canvas.find('textarea').val() : canvas.html();
 
 			// Clean any temp class strings
-			canvas.html(gm.cleanSubstring(gm.options.classRenameSuffix, content, ''));
+			canvas.html(lb.cleanSubstring(lb.options.classRenameSuffix, content, ''));
 
 			// Clean column markup
-			canvas.find(gm.options.colSelector)
+			canvas.find(lb.options.colSelector)
 				.removeAttr("style")
 				.removeAttr("spellcheck")
 				.removeClass("mce-content-body").end()
@@ -1267,10 +1234,10 @@
 				.removeAttr("data-cke-saved-src")
 				.removeAttr("data-mce-src").end()
 			// Remove Tools
-				.find("." + gm.options.gmToolClass).remove();
+				.find("." + lb.options.gmToolClass).remove();
 			// Destroy any RTEs
-			gm.rteControl("stop");
-			gm.log("~~Cleanup Ran~~");
+			lb.rteControl("stop");
+			lb.log("~~Cleanup Ran~~");
 		};
 
 		/**
@@ -1278,24 +1245,25 @@
 		 * @method log
 		 * @param {object} logvar - The Object or string you want to pass to the console
 		 * @returns null
-		 * @property {boolean} gm.options.debug
+		 * @property {boolean} lb.options.debug
 		 */
-		gm.log = function (logvar) {
-			if (gm.options.debug) {
+		lb.log = function (logvar) {
+			if (lb.options.debug) {
 				if ((window['console'] !== undefined)) {
 					window.console.log(logvar);
 				}
 			}
 		};
+
 		// Run initializer
-		gm.init();
+		lb.init();
 	};
 
 
 	/**
-	 Options which can be overridden by the .gridmanager() call on the requesting page------------------------------------------------------
+	 Options which can be overridden by the .layout_builder() call on the requesting page------------------------------------------------------
 	 */
-	$.gridmanager.defaultOptions = {
+	$.layout_builder.defaultOptions = {
 		/*
 		 General Options---------------
 		 */
@@ -1323,22 +1291,22 @@
 		 Canvas---------------
 		 */
 		// Canvas ID
-		canvasId: "gm-canvas",
+		canvasId: "lb-canvas",
 
 		/*
 		 Control Bar---------------
 		 */
 		// Top Control Row ID
-		controlId: "gm-controls",
+		controlId: "lb-controls",
 
 		// Move handle class
-		controlMove: 'gm-move',
+		controlMove: 'lb-move',
 
 		// Editable element toolbar class
-		controlNestedEditable: 'gm-controls-element',
+		controlNestedEditable: 'lb-controls-element',
 
 		// Array of buttons for row templates
-		controlButtons: [[12]],
+		controlButtons: [[12], [6, 6]],
 
 		// Custom Global Controls for rows & cols - available props: global_row, global_col
 		customControls: {global_row: [], global_col: []},
@@ -1350,27 +1318,27 @@
 		controlButtonSpanClass: "fa fa-plus-circle",
 
 		// Control bar RH dropdown markup
-		controlAppend: "<div class='btn-group pull-right'><button title='Edit Source Code' type='button' class='btn btn-xs btn-primary gm-edit-mode'><span class='fa fa-code'></span></button><button title='Preview' type='button' class='btn btn-xs btn-primary gm-preview'><span class='fa fa-eye'></span></button>     <div class='dropdown pull-left gm-layout-mode'><button type='button' class='btn btn-xs btn-primary dropdown-toggle' data-toggle='dropdown'><span class='caret'></span></button> <ul class='dropdown-menu' role='menu'><li><a data-width='auto' title='Desktop'><span class='fa fa-desktop'></span> Desktop</a></li><li><a title='Tablet' data-width='768'><span class='fa fa-tablet'></span> Tablet</a></li><li><a title='Phone' data-width='640'><span class='fa fa-mobile-phone'></span> Phone</a></li></ul></div>    <button type='button' class='btn  btn-xs  btn-primary dropdown-toggle' data-toggle='dropdown'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button><ul class='dropdown-menu' role='menu'><li><a title='Save'  href='#' class='gm-save'><span class='fa fa-save'></span> Save</a></li><li><a title='Reset Grid' href='#' class='gm-resetgrid'><span class='fa fa-trash-o'></span> Reset</a></li></ul></div>",
+		controlAppend: "<div class='btn-group pull-right'><button title='Edit Source Code' type='button' class='btn btn-xs btn-primary lb-edit-mode'><span class='fa fa-code'></span></button><button title='Preview' type='button' class='btn btn-xs btn-primary lb-preview'><span class='fa fa-eye'></span></button>     <div class='dropdown pull-left lb-layout-mode'><button type='button' class='btn btn-xs btn-primary dropdown-toggle' data-toggle='dropdown'><span class='caret'></span></button> <ul class='dropdown-menu' role='menu'><li><a data-width='auto' title='Desktop'><span class='fa fa-desktop'></span> Desktop</a></li><li><a title='Tablet' data-width='768'><span class='fa fa-tablet'></span> Tablet</a></li><li><a title='Phone' data-width='640'><span class='fa fa-mobile-phone'></span> Phone</a></li></ul></div>    <button type='button' class='btn  btn-xs  btn-primary dropdown-toggle' data-toggle='dropdown'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button><ul class='dropdown-menu' role='menu'><li><a title='Save'  href='#' class='lb-save'><span class='fa fa-save'></span> Save</a></li><li><a title='Reset Grid' href='#' class='lb-resetgrid'><span class='fa fa-trash-o'></span> Reset</a></li></ul></div>",
 
 		// Controls for content elements
-		controlContentElem: '<div class="gm-controls-element"> <a class="gm-move fa fa-arrows" href="#" title="Move"></a> <a class="gm-delete fa fa-times" href="#" title="Delete"></a> </div>',
+		controlContentElem: '<div class="lb-controls-element"> <a class="lb-move fa fa-arrows" href="#" title="Move"></a> <a class="lb-delete fa fa-times" href="#" title="Delete"></a> </div>',
 		/*
 		 General editing classes---------------
 		 */
 		// Standard edit class, applied to active elements
-		gmEditClass: "gm-editing",
+		gmEditClass: "lb-editing",
 
 		// Applied to the currently selected element
-		gmEditClassSelected: "gm-editing-selected",
+		gmEditClassSelected: "lb-editing-selected",
 
 		// Editable region class
-		gmEditRegion: "gm-editable-region",
+		gmEditRegion: "lb-editable-region",
 
 		// Editable container class
-		gmContentRegion: "gm-content",
+		gmContentRegion: "lb-content",
 
 		// Tool bar class which are inserted dynamically
-		gmToolClass: "gm-tools",
+		gmToolClass: "lb-tools",
 
 		// Clearing class, used on most toolbars
 		gmClearClass: "clearfix",
@@ -1399,19 +1367,19 @@
 			{
 				title: "Move",
 				element: "a",
-				btnClass: "gm-moveRow pull-left",
+				btnClass: "lb-moveRow pull-left",
 				iconClass: "fa fa-arrows "
 			},
 			{
 				title: "New Column",
 				element: "a",
-				btnClass: "gm-addColumn pull-left  ",
+				btnClass: "lb-addColumn pull-left  ",
 				iconClass: "fa fa-plus"
 			},
 			{
 				title: "Row Settings",
 				element: "a",
-				btnClass: "pull-right gm-rowSettings",
+				btnClass: "pull-right lb-rowSettings",
 				iconClass: "fa fa-cog"
 			}
 
@@ -1422,7 +1390,7 @@
 			{
 				title: "Remove row",
 				element: "a",
-				btnClass: "pull-right gm-removeRow",
+				btnClass: "pull-right lb-removeRow",
 				iconClass: "fa fa-trash-o"
 			}
 		],
@@ -1438,7 +1406,7 @@
 		colClass: "column",
 
 		// Class to allow content to be draggable
-		contentDraggableClass: 'gm-content-draggable',
+		contentDraggableClass: 'lb-content-draggable',
 
 		// Adds any missing classes in columns for muti-device support.
 		addResponsiveClasses: true,
@@ -1481,25 +1449,25 @@
 			{
 				title: "Move",
 				element: "a",
-				btnClass: "gm-moveCol pull-left",
+				btnClass: "lb-moveCol pull-left",
 				iconClass: "fa fa-arrows "
 			},
 			{
 				title: "Column Settings",
 				element: "a",
-				btnClass: "pull-right gm-colSettings",
+				btnClass: "pull-right lb-colSettings",
 				iconClass: "fa fa-cog"
 			},
 			{
 				title: "Make Column Narrower",
 				element: "a",
-				btnClass: "gm-colDecrease pull-left",
+				btnClass: "lb-colDecrease pull-left",
 				iconClass: "fa fa-minus"
 			},
 			{
 				title: "Make Column Wider",
 				element: "a",
-				btnClass: "gm-colIncrease pull-left",
+				btnClass: "lb-colIncrease pull-left",
 				iconClass: "fa fa-plus"
 			}
 		],
@@ -1509,19 +1477,19 @@
 			{
 				title: "Add Nested Row",
 				element: "a",
-				btnClass: "pull-left gm-addRow",
+				btnClass: "pull-left lb-addRow",
 				iconClass: "fa fa-plus-square"
 			},
 			{
 				title: "Remove Column",
 				element: "a",
-				btnClass: "pull-right gm-removeCol",
+				btnClass: "pull-right lb-removeCol",
 				iconClass: "fa fa-trash-o"
 			}
 		],
 
 		// CUstom col classes - add your own to make them available in the col settings
-		colCustomClasses: ["example-col-class", "test-class"],
+		colCustomClasses: ["auto-generate-col-class", "auto-added-class"],
 
 		// Maximum column span value: if you've got a 24 column grid via customised bootstrap, you could set this to 24.
 		colMax: 12,
@@ -1530,7 +1498,7 @@
 		colResizeStep: 1,
 
 		/*
-		 Rich Text Editors---------------
+		 Rich Text Editors
 		 */
 		tinymce: {
 			config: {
@@ -1544,23 +1512,19 @@
 			}
 		},
 
-		// Path to CK custom comfiguration
-		ckeditor: {
-			customConfig: ""
-		}
 	};
 
 	/**
-	 * Exposes gridmanager as jquery function
-	 * @method gridmanager
+	 * Exposes layout_builder as jquery function
+	 * @method layout_builder
 	 * @param {object} options
 	 * @returns CallExpression
 	 */
-	$.fn.gridmanager = function (options) {
+	$.fn.layout_builder = function (options) {
 		return this.each(function () {
 			var element = $(this);
-			var gridmanager = new $.gridmanager(this, options);
-			element.data('gridmanager', gridmanager);
+			var layout_builder = new $.layout_builder(this, options);
+			element.data('layout_builder', layout_builder);
 		});
 	};
 
@@ -1573,6 +1537,7 @@
 	 * @returns CallExpression
 	 */
 	$.expr[':'].regex = function (elem, index, match) {
+
 		var matchParams = match[3].split(','),
 			validLabels = /^(data|css):/,
 			attr = {
