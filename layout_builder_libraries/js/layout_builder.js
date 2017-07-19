@@ -2,13 +2,8 @@
 
 	/**
 	 * Main Layout Builder function
-	 * @method layout_builder
-	 * @returns layout_builder
-	 * @class layout_builder
-	 * @memberOf jQuery.fn
 	 */
 	$.layout_builder = function (el, options) {
-
 		var lb = this;
 
 		lb.$el = $(el);
@@ -18,22 +13,19 @@
 		/**
 		 * API
 		 * @method appendHTMLSelectedCols
-		 * @param {string} html - HTML to append to selected columns
-		 * @returns null
 		 */
 		lb.appendHTMLSelectedCols = function (html) {
 			var canvas = lb.$el.find("#" + lb.options.canvasId);
 			var cols = canvas.find(lb.options.colSelector);
 			$.each(cols, function () {
-				if ($(this).hasClass(lb.options.gmEditClassSelected)) {
-					$('.' + lb.options.gmEditRegion, this).append(html);
+				if ($(this).hasClass(lb.options.lbEditClassSelected)) {
+					$('.' + lb.options.lbEditRegion, this).append(html);
 				}
 			});
 		};
 		/**
 		 * INIT - Main initialising function to create the canvas, controls and initialise all click handlers
-		 * @method init
-		 * @returns null
+
 		 */
 		lb.init = function () {
 			lb.options = $.extend({}, $.layout_builder.defaultOptions, options);
@@ -52,8 +44,6 @@
 
 		/**
 		 * Build and append the canvas, making sure existing HTML in the user's div is wrapped. Will also trigger Responsive classes to existing markup if specified
-		 * @method createCanvas
-		 * @returns null
 		 */
 		lb.createCanvas = function () {
 			lb.log("+ Create Canvas");
@@ -76,12 +66,10 @@
 
 		/**
 		 * Looks for and wraps non gm commented markup
-		 * @method initMarkup
-		 * @returns null
 		 */
 		lb.initMarkup = function (cols) {
-			var cTagOpen = '<!--' + lb.options.gmEditRegion + '-->',
-				cTagClose = '<!--\/' + lb.options.gmEditRegion + '-->';
+			var cTagOpen = '<!--' + lb.options.lbEditRegion + '-->',
+				cTagClose = '<!--\/' + lb.options.lbEditRegion + '-->';
 
 			// Loop over each column
 			$.each(cols, function (i, col) {
@@ -105,11 +93,11 @@
 								var prev = Array.prototype.reverse.call($(val).prevUntil("." + lb.options.rowClass)),
 									after = $(val).nextUntil("." + lb.options.rowClass);
 
-								if (!$(prev).hasClass(lb.options.gmEditRegion)) {
+								if (!$(prev).hasClass(lb.options.lbEditRegion)) {
 									$(prev).first().before(cTagOpen).end()
 										.last().after(cTagClose);
 								}
-								if (!$(after).hasClass(lb.options.gmEditRegion)) {
+								if (!$(after).hasClass(lb.options.lbEditRegion)) {
 									$(after).first().before(cTagOpen).end()
 										.last().after(cTagClose);
 								}
@@ -155,9 +143,6 @@
 
 		/**
 		 * Add missing reponsive classes to existing HTML
-		 * @method addResponsiveness
-		 * @param {} html
-		 * @returns CallExpression
 		 */
 		lb.addResponsiveness = function (html) {
 			if (html === '') {
@@ -197,8 +182,6 @@
 
 		/**
 		 * Build and prepend the control panel
-		 * @method createControls
-		 * @returns null
 		 */
 		lb.createControls = function () {
 			lb.log("+ Create Controls");
@@ -215,13 +198,13 @@
 			 */
 			lb.$el.prepend(
 				$('<div/>',
-					{'id': lb.options.controlId, 'class': lb.options.gmClearClass}
+					{'id': lb.options.controlId, 'class': lb.options.lbClearClass}
 				).prepend(
 					$('<div/>', {"class": lb.options.rowClass}).html(
 						$('<div/>', {"class": lb.options.colDesktopClass + lb.options.colMax}).addClass(lb.options.colAdditionalClass).html(
 							$('<div/>', {'id': 'lb-addnew'})
-								.addClass(lb.options.gmBtnGroup)
-								.addClass(lb.options.gmFloatLeft).html(
+								.addClass(lb.options.lbBtnGroup)
+								.addClass(lb.options.lbFloatLeft).html(
 								buttons.join("")
 							)
 						).append(lb.options.controlAppend)
@@ -232,9 +215,6 @@
 
 		/**
 		 * Adds a CSS file or CSS Framework required for specific customizations
-		 * @method addCSS
-		 * @param {} myStylesLocation
-		 * @returns string
 		 */
 		lb.addCSS = function (myStylesLocation) {
 			if (myStylesLocation !== '') {
@@ -244,11 +224,6 @@
 
 		/**
 		 * Clean all occurrences of a substring
-		 * @method cleanSubstring
-		 * @param {} regex
-		 * @param {} source
-		 * @param {} replacement
-		 * @returns CallExpression
 		 */
 		lb.cleanSubstring = function (regex, source, replacement) {
 			return source.replace(new RegExp(regex, 'g'), replacement);
@@ -256,9 +231,6 @@
 
 		/**
 		 * Switches the layout mode for Desktop, Tablets or Mobile Phones
-		 * @method switchLayoutMode
-		 * @param {} mode
-		 * @returns null
 		 */
 		lb.switchLayoutMode = function (mode) {
 			var canvas = lb.$el.find("#" + lb.options.canvasId), temp_html = canvas.html(), regex1 = '', regex2 = '',
@@ -298,8 +270,6 @@
 
 		/**
 		 * Add click functionality to the buttons
-		 * @method initControls
-		 * @returns null
 		 */
 		lb.initControls = function () {
 			var canvas = lb.$el.find("#" + lb.options.canvasId);
@@ -314,7 +284,7 @@
 					lb.initCanvas();
 					$(this).parent().find(".lb-edit-mode").prop('disabled', false);
 				}
-				$(this).toggleClass(lb.options.gmDangerClass);
+				$(this).toggleClass(lb.options.lbDangerClass);
 
 				// Switch Layout Mode
 			}).on("click", ".lb-layout-mode a", function () {
@@ -334,13 +304,13 @@
 					lb.mode = "visual";
 					$(this).parent().find(".lb-preview, .lb-layout-mode > button").prop('disabled', false);
 				}
-				$(this).toggleClass(lb.options.gmDangerClass);
+				$(this).toggleClass(lb.options.lbDangerClass);
 
 				// Make region editable
-			}).on("click", "." + lb.options.gmEditRegion + ' .' + lb.options.gmContentRegion, function () {
+			}).on("click", "." + lb.options.lbEditRegion + ' .' + lb.options.lbContentRegion, function () {
 				//lb.log("clicked editable");
 				if (!$(this).attr("contenteditable")) {
-					$(this).attr("contenteditable", true);
+					$(this).attr("contenteditable", false);
 					lb.rteControl("attach", $(this));
 				}
 
@@ -370,9 +340,9 @@
 				var theClass = $(this).text().trim();
 				row.toggleClass(theClass);
 				if (row.hasClass(theClass)) {
-					$(this).addClass(lb.options.gmDangerClass);
+					$(this).addClass(lb.options.lbDangerClass);
 				} else {
-					$(this).removeClass(lb.options.gmDangerClass);
+					$(this).removeClass(lb.options.lbDangerClass);
 				}
 
 				/* Col settings */
@@ -396,9 +366,9 @@
 				var theClass = $(this).text().trim();
 				col.toggleClass(theClass);
 				if (col.hasClass(theClass)) {
-					$(this).addClass(lb.options.gmDangerClass);
+					$(this).addClass(lb.options.lbDangerClass);
 				} else {
-					$(this).removeClass(lb.options.gmDangerClass);
+					$(this).removeClass(lb.options.lbDangerClass);
 				}
 
 				// Add new column to existing row
@@ -410,7 +380,7 @@
 				// Add a nested row
 			}).on("click", "a.lb-addRow", function () {
 				lb.log("Adding nested row");
-				$(this).closest("." + lb.options.gmEditClass).append(
+				$(this).closest("." + lb.options.lbEditClass).append(
 					$("<div>").addClass(lb.options.rowClass)
 						.html(lb.createCol(6))
 						.append(lb.createCol(6)));
@@ -418,7 +388,7 @@
 
 				// Decrease Column Size
 			}).on("click", "a.lb-colDecrease", function () {
-				var col = $(this).closest("." + lb.options.gmEditClass);
+				var col = $(this).closest("." + lb.options.lbEditClass);
 				var t = lb.getColClass(col);
 				if (t.colWidth > parseInt(lb.options.colResizeStep, 10)) {
 					t.colWidth = (parseInt(t.colWidth, 10) - parseInt(lb.options.colResizeStep, 10));
@@ -427,7 +397,7 @@
 
 				// Increase Column Size
 			}).on("click", "a.lb-colIncrease", function () {
-				var col = $(this).closest("." + lb.options.gmEditClass);
+				var col = $(this).closest("." + lb.options.lbEditClass);
 				var t = lb.getColClass(col);
 				if (t.colWidth < lb.options.colMax) {
 					t.colWidth = (parseInt(t.colWidth, 10) + parseInt(lb.options.colResizeStep, 10));
@@ -441,7 +411,7 @@
 
 				// Remove a col or row
 			}).on("click", "a.lb-removeCol", function () {
-				$(this).closest("." + lb.options.gmEditClass).animate({
+				$(this).closest("." + lb.options.lbEditClass).animate({
 					opacity: 'hide',
 					width: 'hide',
 					height: 'hide'
@@ -452,7 +422,7 @@
 
 			}).on("click", "a.lb-removeRow", function () {
 				lb.log($(this).closest("." + lb.options.colSelector));
-				$(this).closest("." + lb.options.gmEditClass).animate({opacity: 'hide', height: 'hide'}, 400, function () {
+				$(this).closest("." + lb.options.lbEditClass).animate({opacity: 'hide', height: 'hide'}, 400, function () {
 					$(this).remove();
 					// Check for multiple editable regions and merge?
 
@@ -472,9 +442,6 @@
 
 		/**
 		 * Add any custom buttons globally on all rows / cols
-		 * returns void
-		 * @method initGlobalCustomControls
-		 * @returns null
 		 */
 		lb.initGlobalCustomControls = function () {
 			var canvas = lb.$el.find("#" + lb.options.canvasId),
@@ -524,9 +491,6 @@
 
 		/**
 		 * Add any custom buttons configured on the data attributes
-		 * returns void
-		 * @method initCustomControls
-		 * @returns null
 		 */
 		lb.initCustomControls = function () {
 			var canvas = lb.$el.find("#" + lb.options.canvasId),
@@ -540,8 +504,8 @@
 
 			$(('.' + lb.options.colClass + ':data,' + ' .' + lb.options.rowClass + ':data'), canvas).each(function () {
 				for (prop in $(this).data()) {
-					if (prop.indexOf('gmButton') === 0) {
-						callbackFunc = prop.replace('gmButton', '');
+					if (prop.indexOf('lbButton') === 0) {
+						callbackFunc = prop.replace('lbButton', '');
 						callbackParams = $(this).data()[prop].split('|');
 						// Cannot accept 0 params or empty callback function name
 						if (callbackParams.length === 0 || callbackFunc === '') {
@@ -568,19 +532,6 @@
 
 		/**
 		 * Configures custom button click callback function
-		 * returns bool, true on success false on failure
-		 * @container - container element that wraps the toolbar
-		 * @btnLoc - button location: "top" for the upper toolbar and "bottom" for the lower one
-		 * @callbackScp - function scope to use. "window" for global scope
-		 * @callbackFunc - function name to call when the user clicks the custom button
-		 * @btnObj - button object that contains properties for: tag name, title, icon class, button class and label
-		 * @method setupCustomBtn
-		 * @param {} container
-		 * @param {} btnLoc
-		 * @param {} callbackScp
-		 * @param {} callbackFunc
-		 * @param {} btnObj
-		 * @returns Literal
 		 */
 		lb.setupCustomBtn = function (container, btnLoc, callbackScp, callbackFunc, btnObj) {
 			var callback = null;
@@ -597,7 +548,7 @@
 			btnLoc = (btnLoc === 'bottom') ? ':last' : ':first';
 
 			// Add the button to the selected toolbar
-			$(('.' + lb.options.gmToolClass + btnLoc), container).append(lb.buttonFactory([btnObj])).find(':last').on('click', function (e) {
+			$(('.' + lb.options.lbToolClass + btnLoc), container).append(lb.buttonFactory([btnObj])).find(':last').on('click', function (e) {
 				callback(container, this);
 				e.preventDefault();
 			});
@@ -620,13 +571,6 @@
 
 		/**
 		 * Checks that a callback exists and returns it if available
-		 * returns function
-		 * @callbackScp - function scope to use. "window" for global scope
-		 * @callbackFunc - function name to call when the user clicks the custom button
-		 * @method isValidCallback
-		 * @param {} callbackScp
-		 * @param {} callbackFunc
-		 * @returns callback
 		 */
 		lb.isValidCallback = function (callbackScp, callbackFunc) {
 			var callback = null;
@@ -647,12 +591,6 @@
 
 		/**
 		 * Get the col-md-6 class, returning 6 as well from column
-		 * returns colDesktopClass: the full col-md-6 class
-		 * colWidth: just the last integer of classname
-		 * @col - column to look at
-		 * @method getColClass
-		 * @param {} col
-		 * @return ObjectExpression
 		 */
 		lb.getColClass = function (col) {
 			var colClass = $.grep(col.attr("class").split(" "), function (v) {
@@ -663,12 +601,7 @@
 		};
 
 		/*
-		 Run (if set) any custom init/deinit filters on the layout_builder canvas
-		 @canvasElem - canvas wrapper container with the entire layout html
-		 @isInit - flag that indicates if the method is running during init or deinit.
-		 true - if its running during the init process, or false - during the deinit (cleanup) process
-
-		 returns void
+		 *Run (if set) any custom init/deinit filters on the layout_builder canvas
 		 */
 
 		lb.runFilter = function (canvasElem, isInit) {
@@ -682,16 +615,12 @@
 
 		/**
 		 * Turns canvas into lb-editing mode - does most of the hard work here
-		 * @method initCanvas
-		 * @returns null
 		 */
 		lb.initCanvas = function () {
-			// cache canvas
 			var canvas = lb.$el.find("#" + lb.options.canvasId);
 			lb.switchLayoutMode(lb.options.layoutDefaultMode);
 			var cols = canvas.find(lb.options.colSelector);
 			var rows = canvas.find(lb.options.rowSelector);
-			lb.log("+ InitCanvas Running");
 			// Show the template controls
 			lb.$el.find("#lb-addnew").show();
 			// Sort Rows First
@@ -728,15 +657,7 @@
 					cursor: "move"
 				});
 			});
-			/* Make rows sortable
-			 cols.sortable({
-			 items: lb.options.rowSelector,
-			 axis: 'y',
-			 handle: ".lb-moveRow",
-			 forcePlaceholderSize: true,   opacity: 0.7,  revert: true,
-			 tolerance: "pointer",
-			 cursor: "move"
-			 }); */
+
 			lb.status = true;
 			lb.mode = "visual";
 			lb.initCustomControls();
@@ -746,8 +667,6 @@
 
 		/**
 		 * Removes canvas editing mode
-		 * @method deinitCanvas
-		 * @returns null
 		 */
 		lb.deinitCanvas = function () {
 			// cache canvas
@@ -770,8 +689,6 @@
 
 		/**
 		 * Push cleaned div content somewhere to save it
-		 * @method saveremote
-		 * @returns null
 		 */
 		lb.saveremote = function () {
 			var canvas = lb.$el.find("#" + lb.options.canvasId);
@@ -780,47 +697,35 @@
 				url: lb.options.remoteURL,
 				data: {content: canvas.html()}
 			});
-			lb.log("Save Function Called");
 		};
 
 
 		/*------------------------------------------ ROWS ---------------------------------------*/
 		/**
 		 * Look for pre-existing rows and add editing tools as appropriate
-		 * @rows: elements to act on
-		 * @method activateRows
-		 * @param {object} rows - rows to act on
-		 * @returns null
 		 */
 		lb.activateRows = function (rows) {
 			lb.log("++ Activate Rows");
-			rows.addClass(lb.options.gmEditClass)
+			rows.addClass(lb.options.lbEditClass)
 				.prepend(lb.toolFactory(lb.options.rowButtonsPrepend))
 				.append(lb.toolFactory(lb.options.rowButtonsAppend));
 		};
 
 		/**
 		 * Look for pre-existing rows and remove editing classes as appropriate
-		 * @rows: elements to act on
-		 * @method deactivateRows
-		 * @param {object} rows - rows to act on
-		 * @returns null
 		 */
 		lb.deactivateRows = function (rows) {
 			lb.log("-- DeActivate Rows");
-			rows.removeClass(lb.options.gmEditClass)
+			rows.removeClass(lb.options.lbEditClass)
 				.removeClass("ui-sortable")
 				.removeAttr("style");
 		};
 
 		/**
 		 * Create a single row with appropriate editing tools & nested columns
-		 * @method createRow
-		 * @param {array} colWidths - array of css class integers, i.e [2,4,5]
-		 * @returns row
 		 */
 		lb.createRow = function (colWidths) {
-			var row = $("<div/>", {"class": lb.options.rowClass + " " + lb.options.gmEditClass});
+			var row = $("<div/>", {"class": lb.options.rowClass + " " + lb.options.lbEditClass});
 			$.each(colWidths, function (i, val) {
 				row.append(lb.createCol(val));
 			});
@@ -830,9 +735,6 @@
 
 		/**
 		 * Create the row specific settings box
-		 * @method generateRowSettings
-		 * @param {object} row - row to act on
-		 * @return MemberExpression
 		 */
 		lb.generateRowSettings = function (row) {
 			// Row class toggle buttons
@@ -847,18 +749,18 @@
 					).append(" " + val);
 
 				if (row.hasClass(val)) {
-					btn.addClass(lb.options.gmDangerClass);
+					btn.addClass(lb.options.lbDangerClass);
 				}
 				classBtns.push(btn[0].outerHTML);
 			});
 			// Row settings drawer
 			var html = $("<div/>")
 				.addClass("lb-rowSettingsDrawer")
-				.addClass(lb.options.gmToolClass)
-				.addClass(lb.options.gmClearClass)
+				.addClass(lb.options.lbToolClass)
+				.addClass(lb.options.lbClearClass)
 				.prepend($("<div />")
-					.addClass(lb.options.gmBtnGroup)
-					.addClass(lb.options.gmFloatLeft)
+					.addClass(lb.options.lbBtnGroup)
+					.addClass(lb.options.lbFloatLeft)
 					.html(classBtns.join("")))
 				.append($("<div />").addClass("pull-right").html(
 					$("<label />").html("Row ID ").append(
@@ -871,9 +773,6 @@
 
 		/**
 		 * Create the col specific settings box
-		 * @method generateColSettings
-		 * @param {object} col - Column to act on
-		 * @return MemberExpression
 		 */
 		lb.generateColSettings = function (col) {
 			// Col class toggle buttons
@@ -887,18 +786,18 @@
 							.addClass(lb.options.controlButtonSpanClass)
 					).append(" " + val);
 				if (col.hasClass(val)) {
-					btn.addClass(lb.options.gmDangerClass);
+					btn.addClass(lb.options.lbDangerClass);
 				}
 				classBtns.push(btn[0].outerHTML);
 			});
 			// col settings drawer
 			var html = $("<div/>")
 				.addClass("lb-colSettingsDrawer")
-				.addClass(lb.options.gmToolClass)
-				.addClass(lb.options.gmClearClass)
+				.addClass(lb.options.lbToolClass)
+				.addClass(lb.options.lbClearClass)
 				.prepend($("<div />")
-					.addClass(lb.options.gmBtnGroup)
-					.addClass(lb.options.gmFloatLeft)
+					.addClass(lb.options.lbBtnGroup)
+					.addClass(lb.options.lbFloatLeft)
 					.html(classBtns.join("")))
 				.append($("<div />").addClass("pull-right").html(
 					$("<label />").html("col ID ").append(
@@ -913,15 +812,11 @@
 
 		/*------------------------------------------ COLS ---------------------------------------*/
 
-
 		/**
 		 * Look for pre-existing columns and add editing tools as appropriate
-		 * @method activateCols
-		 * @param {object} cols - elements to act on
-		 * @returns null
 		 */
 		lb.activateCols = function (cols) {
-			cols.addClass(lb.options.gmEditClass);
+			cols.addClass(lb.options.lbEditClass);
 			// For each column,
 			$.each(cols, function (i, column) {
 				$(column).prepend(lb.toolFactory(lb.options.colButtonsPrepend));
@@ -932,17 +827,14 @@
 
 		/**
 		 * Look for pre-existing columns and removeediting tools as appropriate
-		 * @method deactivateCols
-		 * @param {object} cols - elements to act on
-		 * @returns null
 		 */
 		lb.deactivateCols = function (cols) {
-			cols.removeClass(lb.options.gmEditClass)
-				.removeClass(lb.options.gmEditClassSelected)
+			cols.removeClass(lb.options.lbEditClass)
+				.removeClass(lb.options.lbEditClassSelected)
 				.removeClass("ui-sortable");
 			$.each(cols.children(), function (i, val) {
 				// Grab contents of editable regions and unwrap
-				if ($(val).hasClass(lb.options.gmEditRegion)) {
+				if ($(val).hasClass(lb.options.lbEditRegion)) {
 					if ($(val).html() !== '') {
 						$(val).contents().unwrap();
 					} else {
@@ -951,14 +843,10 @@
 					}
 				}
 			});
-			lb.log("-- deActivate Cols Ran");
 		};
 
 		/**
 		 * Create a single column with appropriate editing tools
-		 * @method createCol
-		 * @param {integer} size - width of the column to create, i.e 6
-		 * @returns null
 		 */
 		lb.createCol = function (size) {
 			var col = $("<div/>")
@@ -966,12 +854,11 @@
 				.addClass(lb.options.colDesktopClass + size)
 				.addClass(lb.options.colTabletClass + size)
 				.addClass(lb.options.colPhoneClass + size)
-				.addClass(lb.options.gmEditClass)
+				.addClass(lb.options.lbEditClass)
 				.addClass(lb.options.colAdditionalClass)
 				.html(lb.toolFactory(lb.options.colButtonsPrepend))
 				.prepend(lb.toolFactory(lb.options.colButtonsPrepend))
 				.append(lb.toolFactory(lb.options.colButtonsAppend));
-			lb.log("++ Created Column " + size);
 			return col;
 		};
 
@@ -980,27 +867,20 @@
 
 		/*
 		 Callback called when a the new editable area button is clicked
-
-		 @container - container element that wraps the select button
-		 @btn       - button element that was clicked
-
-		 returns void
 		 */
 		lb.addEditableAreaClick = function (container, btn) {
-			var cTagOpen = '<!--' + lb.options.gmEditRegion + '-->',
-				cTagClose = '<!--\/' + lb.options.gmEditRegion + '-->',
+			var cTagOpen = '<!--' + lb.options.lbEditRegion + '-->',
+				cTagClose = '<!--\/' + lb.options.lbEditRegion + '-->',
 				elem = null;
-			$(('.' + lb.options.gmToolClass + ':last'), container)
-				.before(elem = $('<div>').addClass(lb.options.gmEditRegion + ' ' + lb.options.contentDraggableClass)
-					.append(lb.options.controlContentElem + '<div class="' + lb.options.gmContentRegion + '"><p>Enter Text Content</p></div>')).before(cTagClose).prev().before(cTagOpen);
+			$(('.' + lb.options.lbToolClass + ':last'), container)
+				.before(elem = $('<div>').addClass(lb.options.lbEditRegion + ' ' + lb.options.contentDraggableClass)
+					.append(lb.options.controlContentElem + '<div class="' + lb.options.lbContentRegion + '"><p>Enter Text Content</p></div>')).before(cTagClose).prev().before(cTagOpen);
 			lb.initNewContentElem(elem);
 		};
 
 		/*
 		 Prepares any new content element inside columns so inner toolbars buttons work
 		 and any drag & drop functionality.
-		 @newElem  - Container of the new content element added into a col
-		 returns void
 		 */
 
 		lb.initNewContentElem = function (newElem) {
@@ -1014,7 +894,7 @@
 
 			$.each(parentCols, function (i, col) {
 				$(col).on('click', '.lb-delete', function (e) {
-					$(this).closest('.' + lb.options.gmEditRegion).remove();
+					$(this).closest('.' + lb.options.lbEditRegion).remove();
 					lb.resetCommentTags(col);
 					e.preventDefault();
 				});
@@ -1036,53 +916,33 @@
 
 		/*
 		 Resets the comment tags for editable elements
-		 @elem - Element to reset the editable comments on
-		 returns void
 		 */
-
 		lb.resetCommentTags = function (elem) {
-			var cTagOpen = '<!--' + lb.options.gmEditRegion + '-->',
-				cTagClose = '<!--\/' + lb.options.gmEditRegion + '-->';
+			var cTagOpen = '<!--' + lb.options.lbEditRegion + '-->',
+				cTagClose = '<!--\/' + lb.options.lbEditRegion + '-->';
 			// First remove all existing comments
 			lb.clearComments(elem);
 			// Now replace these comment tags
-			$('.' + lb.options.gmEditRegion, elem).before(cTagOpen).after(cTagClose);
+			$('.' + lb.options.lbEditRegion, elem).before(cTagOpen).after(cTagClose);
 		};
-
-		/*
-		 Callback called when a the column selection button is clicked
-		 @container - container element that wraps the select button
-		 @btn       - button element that was clicked
-		 returns void
-		 */
-
-		lb.selectColClick = function (container, btn) {
-			$(btn).toggleClass('fa fa-square-o fa fa-check-square-o');
-			if ($(btn).hasClass('fa-check-square-o')) {
-				$(container).addClass(lb.options.gmEditClassSelected);
-			} else {
-				$(container).removeClass(lb.options.gmEditClassSelected);
-			}
-		};
-
 
 		/*
 		 Filter method to restore editable regions in edit mode.
 		 */
 		lb.editableAreaFilter = function (canvasElem, isInit) {
 			if (isInit) {
-				var cTagOpen = '<!--' + lb.options.gmEditRegion + '-->',
-					cTagClose = '<!--\/' + lb.options.gmEditRegion + '-->',
+				var cTagOpen = '<!--' + lb.options.lbEditRegion + '-->',
+					cTagClose = '<!--\/' + lb.options.lbEditRegion + '-->',
 					regex = new RegExp('(?:' + cTagOpen + ')\\s*([\\s\\S]+?)\\s*(?:' + cTagClose + ')', 'g'),
 					html = $(canvasElem).html(),
-					rep = cTagOpen + '<div class="' + lb.options.gmEditRegion + ' ' + lb.options.contentDraggableClass + '">' + lb.options.controlContentElem + '<div class="' + lb.options.gmContentRegion + '">$1</div></div>' + cTagClose;
+					rep = cTagOpen + '<div class="' + lb.options.lbEditRegion + ' ' + lb.options.contentDraggableClass + '">' + lb.options.controlContentElem + '<div class="' + lb.options.lbContentRegion + '">$1</div></div>' + cTagClose;
 
 				html = html.replace(regex, rep);
 				$(canvasElem).html(html);
 				lb.log("editableAreaFilter init ran");
 			} else {
 				$('.' + lb.options.controlNestedEditable, canvasElem).remove();
-				$('.' + lb.options.gmContentRegion).contents().unwrap();
+				$('.' + lb.options.lbContentRegion).contents().unwrap();
 
 				lb.log("editableAreaFilter deinit ran");
 			}
@@ -1091,23 +951,17 @@
 		/*------------------------------------------ BTNs ---------------------------------------*/
 		/**
 		 * Returns an editing div with appropriate btns as passed in
-		 * @method toolFactory
-		 * @param {array} btns - Array of buttons (see options)
-		 * @return MemberExpression
 		 */
 		lb.toolFactory = function (btns) {
 			var tools = $("<div/>")
-				.addClass(lb.options.gmToolClass)
-				.addClass(lb.options.gmClearClass)
+				.addClass(lb.options.lbToolClass)
+				.addClass(lb.options.lbClearClass)
 				.html(lb.buttonFactory(btns));
 			return tools[0].outerHTML;
 		};
 
 		/**
 		 * Returns html string of buttons
-		 * @method buttonFactory
-		 * @param {array} btns - Array of button configurations (see options)
-		 * @return CallExpression
 		 */
 		lb.buttonFactory = function (btns) {
 			var buttons = [];
@@ -1150,10 +1004,6 @@
 		/*------------------------------------------ RTEs ---------------------------------------*/
 		/**
 		 * Starts, stops, looks for and  attaches RTEs
-		 * @method rteControl
-		 * @param {string} action  - options are init, attach, stop
-		 * @param {object} element  - object to attach an RTE to
-		 * @returns null
 		 */
 		lb.rteControl = function (action, element) {
 			lb.log("RTE " + lb.options.rte + ' ' + action);
@@ -1187,8 +1037,6 @@
 
 		/**
 		 * Quick reset - deinit & init the canvas
-		 * @method reset
-		 * @returns null
 		 */
 		lb.reset = function () {
 
@@ -1198,10 +1046,7 @@
 
 		/**
 		 * Remove all extraneous markup
-		 * @method cleanup
-		 * @returns null
 		 */
-
 		lb.cleanup = function () {
 
 			var canvas,
@@ -1212,10 +1057,6 @@
 
 			/**
 			 * Determine the current edit mode and get the content based upon the resultant
-			 * context to prevent content in source mode from being lost on save, as such:
-			 *
-			 * edit mode (source): canvas.find('textarea').val()
-			 * edit mode (visual): canvas.html()
 			 */
 			content = lb.mode !== "visual" ? canvas.find('textarea').val() : canvas.html();
 
@@ -1234,7 +1075,7 @@
 				.removeAttr("data-cke-saved-src")
 				.removeAttr("data-mce-src").end()
 			// Remove Tools
-				.find("." + lb.options.gmToolClass).remove();
+				.find("." + lb.options.lbToolClass).remove();
 			// Destroy any RTEs
 			lb.rteControl("stop");
 			lb.log("~~Cleanup Ran~~");
@@ -1242,10 +1083,6 @@
 
 		/**
 		 * Generic logging function
-		 * @method log
-		 * @param {object} logvar - The Object or string you want to pass to the console
-		 * @returns null
-		 * @property {boolean} lb.options.debug
 		 */
 		lb.log = function (logvar) {
 			if (lb.options.debug) {
@@ -1264,10 +1101,6 @@
 	 Options which can be overridden by the .layout_builder() call on the requesting page------------------------------------------------------
 	 */
 	$.layout_builder.defaultOptions = {
-		/*
-		 General Options---------------
-		 */
-
 		debug: 0,
 
 		// Are you columns selectable
@@ -1326,28 +1159,28 @@
 		 General editing classes---------------
 		 */
 		// Standard edit class, applied to active elements
-		gmEditClass: "lb-editing",
+		lbEditClass: "lb-editing",
 
 		// Applied to the currently selected element
-		gmEditClassSelected: "lb-editing-selected",
+		lbEditClassSelected: "lb-editing-selected",
 
 		// Editable region class
-		gmEditRegion: "lb-editable-region",
+		lbEditRegion: "lb-editable-region",
 
 		// Editable container class
-		gmContentRegion: "lb-content",
+		lbContentRegion: "lb-content",
 
 		// Tool bar class which are inserted dynamically
-		gmToolClass: "lb-tools",
+		lbToolClass: "lb-tools",
 
 		// Clearing class, used on most toolbars
-		gmClearClass: "clearfix",
+		lbClearClass: "clearfix",
 
 		// generic float left and right
-		gmFloatLeft: "pull-left",
-		gmFloatRight: "pull-right",
-		gmBtnGroup: "btn-group",
-		gmDangerClass: "btn-danger",
+		lbFloatLeft: "pull-left",
+		lbFloatRight: "pull-right",
+		lbBtnGroup: "btn-group",
+		lbDangerClass: "btn-danger",
 
 
 		/*
@@ -1516,9 +1349,6 @@
 
 	/**
 	 * Exposes layout_builder as jquery function
-	 * @method layout_builder
-	 * @param {object} options
-	 * @returns CallExpression
 	 */
 	$.fn.layout_builder = function (options) {
 		return this.each(function () {
@@ -1530,11 +1360,6 @@
 
 	/**
 	 * General Utility Regex function used to get custom callback attributes
-	 * @method regex
-	 * @param {} elem
-	 * @param {} index
-	 * @param {} match
-	 * @returns CallExpression
 	 */
 	$.expr[':'].regex = function (elem, index, match) {
 
