@@ -308,7 +308,7 @@
 			}).on("click", "." + lb.options.lbEditRegion + ' .' + lb.options.lbContentRegion, function () {
 				//lb.log("clicked editable");
 				if (!$(this).attr("contenteditable")) {
-					$(this).attr("contenteditable", false);
+					$(this).attr("contenteditable", true);
 					lb.rteControl("attach", $(this));
 				}
 
