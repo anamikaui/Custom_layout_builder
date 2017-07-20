@@ -41,7 +41,7 @@
 		};
 		/*------------------------------------------ Canvas & Controls ---------------------------------------*/
 		/**
-		 * Build and append the canvas, making sure existing HTML in the user's div is wrapped. Will also trigger Responsive classes to existing markup if specified
+		 * Build and append the canvas, making sure existing HTML in the user's div is wrapped. Will also trigger Responsive
 		 */
 		lb.createCanvas = function () {
 			lb.log("+ Create Canvas");
@@ -169,7 +169,7 @@
 				if (!hasTablet) {
 					$(this).addClass(lb.options.colTabletClass + colNum);
 				}
-				// Adds default column classes - probably shouldn't go here, but since we're doing an expensive search to add the responsive classes, it'll do for now.
+				// Adds default column classes - probably shouldn't go here, but since we're doing an expensive search to add
 				if (lb.options.addDefaultColumnClass) {
 					if (!$(this).hasClass(lb.options.colClass)) {
 						$(this).addClass(lb.options.colClass);
@@ -306,7 +306,6 @@
 
 				// Make region editable
 			}).on("click", "." + lb.options.lbEditRegion + ' .' + lb.options.lbContentRegion, function () {
-				//lb.log("clicked editable");
 				if (!$(this).attr("contenteditable")) {
 					$(this).attr("contenteditable", true);
 					lb.rteControl("attach", $(this));
@@ -555,10 +554,6 @@
 
 		/*
 		 Clears any comments inside a given element
-
-		 @elem - element to clear html comments on
-
-		 returns void
 		 */
 
 		lb.clearComments = function (elem) {
@@ -867,12 +862,10 @@
 		 Callback called when a the new editable area button is clicked
 		 */
 		lb.addEditableAreaClick = function (container, btn) {
-			var cTagOpen = '<!--' + lb.options.lbEditRegion + '-->',
-				cTagClose = '<!--\/' + lb.options.lbEditRegion + '-->',
-				elem = null;
+			var elem = null;
 			$(('.' + lb.options.lbToolClass + ':last'), container)
 				.before(elem = $('<div>').addClass(lb.options.lbEditRegion + ' ' + lb.options.contentDraggableClass)
-					.append(lb.options.controlContentElem + '<div class="' + lb.options.lbContentRegion + '"><p>Enter Text Content</p></div>')).before(cTagClose).prev().before(cTagOpen);
+					.append(lb.options.controlContentElem + '<div class="' + lb.options.lbContentRegion + '"><p>Enter Text Content</p></div>'));
 			lb.initNewContentElem(elem);
 		};
 
@@ -1026,7 +1019,6 @@
 					}
 					break; //end stop
 				default:
-					lb.log("No RTE Action specified");
 			}
 		};
 
@@ -1046,10 +1038,8 @@
 		 * Remove all extraneous markup
 		 */
 		lb.cleanup = function () {
-
 			var canvas,
 				content;
-
 			// cache canvas
 			canvas = lb.$el.find("#" + lb.options.canvasId);
 
@@ -1076,7 +1066,6 @@
 				.find("." + lb.options.lbToolClass).remove();
 			// Destroy any RTEs
 			lb.rteControl("stop");
-			lb.log("~~Cleanup Ran~~");
 		};
 
 		/**
@@ -1325,7 +1314,7 @@
 		// Maximum column span value: if you've got a 24 column grid via customised bootstrap, you could set this to 24.
 		colMax: 12,
 
-		// Column resizing +- value: this is also the colMin value, as columns won't be able to go smaller than this number (otherwise you hit zero and all hell breaks loose)
+		// Column resizing +- value: this is also the colMin value, as columns won't be able to go smaller than this number
 		colResizeStep: 1,
 
 		/*
